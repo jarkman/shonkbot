@@ -11,7 +11,7 @@ IRDetector::IRDetector( int8_t _ledPin, int8_t _phototransistorPin, int8_t _piez
   
   period = 1000000 / frequency; // in microseconds
   phaseDuration = period/4; // in microsecods
-  numSamples = 4.0; // rolling average
+  numSamples = 10.0; // rolling average
   signal = 0.0;
   
   for( int p = 0; p < 4; p ++ )

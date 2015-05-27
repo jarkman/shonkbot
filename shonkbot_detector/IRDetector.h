@@ -1,5 +1,3 @@
- - 
-
 #ifndef IRDetector_h
 #define IRDetector_h
 
@@ -43,6 +41,11 @@ With
 Will detect 75Hz square wave. Pizo sounder will indicate signal level.
 
 Use getSignal() to read the received signal level.
+
+
+You can use one phototransistor (and even one piezo) with multiple IRDetectors, so you can use the same
+phototransistor for both collision detection and swarming if you want.
+
 
 */
 

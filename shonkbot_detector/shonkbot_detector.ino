@@ -1,4 +1,11 @@
 
+/*
+
+Shonkbot with IR object detection and a bump-and-turn action for obstacle avoidance
+
+*/
+
+
 #include <AccelStepper.h>
 #include "IRDetector.h"
 
@@ -7,7 +14,7 @@
 
 
 
-// Arduino pins wired to stepper drivers - driver bosrd labels pinsas IN1, IN2 etc
+// Arduino pins wired to stepper drivers - driver board labels pins as IN1, IN2 etc
 #define LEFT_IN1 2
 #define LEFT_IN2 3
 #define LEFT_IN3 4
@@ -20,22 +27,22 @@
 
 
 // Define a stepper and the pins it will use
-// We use HALF4WIRE because it results in lower overall current consumption (150mA per motor as opposed to 200mA)
+// We use HALF4WIRE not FULL4WIRE because it results in lower overall current consumption (150mA per motor as opposed to 200mA)
 AccelStepper leftStepper(AccelStepper::HALF4WIRE, LEFT_IN1,LEFT_IN3,LEFT_IN2,LEFT_IN4); // note middle two pins are swapped to work with 28BYJ-48 
                                                                                                                       
 AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2,RIGHT_IN4); // note middle two pins are swapped!
 
-// Wire IR LED to pin 13, IR phototransistor to A0, use 100 hz for collision detection
-#define PIEZO_PIN 12
-#define COLLISION_LED_PIN 13
-#define COLLISION_PHOTOTRANSISTOR_PIN A0
-#define COLLISION_FREQUENCY 100
+
+#define PIEZO_PIN 12                        // Wire a piezo sounder from pin 12 to ground
+#define COLLISION_LED_PIN 13                // Wire IR LED from pin 13 to ground
+#define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor from A0 to ground, with a 10k pullup
+#define COLLISION_FREQUENCY 75              // Use 75 hz for collision detection
 
 IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
 
 // using 28BYj-48 motors from http://www.ebay.co.uk/itm/131410728499
 
-#define STEPS_PER_REV (4096.0/2.0) // these motore come in two different gear rations, 
+#define STEPS_PER_REV (4096.0/2.0) // these motors come in two different gear rations, 
                               // see http://42bots.com/tutorials/28byj-48-stepper-motor-with-uln2003-driver-and-arduino-uno/ 
                               // and http://forum.arduino.cc/index.php?topic=71964.15
 
