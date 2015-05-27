@@ -3,6 +3,8 @@
 
 Shonkbot with IR object detection and a bump-and-turn action for obstacle avoidance
 
+See http://jarkman.co.uk/catalog/robots/shonkbot.htm for more details
+
 */
 
 
