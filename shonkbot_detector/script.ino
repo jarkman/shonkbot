@@ -152,6 +152,7 @@ void goToXY( float x, float y )
 
 void go( float distance )
 {
+  /* Needs fixing up to use twoWheel
   float steps = stepsForDistance( distance );
   leftStepper.setCurrentPosition(0);
   rightStepper.setCurrentPosition(0);
@@ -160,11 +161,12 @@ void go( float distance )
   
   currentX += distance * sin( currentDirection );
   currentY += distance * cos( currentDirection );
-  
+  */
 }
 
 void turn( float degrees ) //  clockwise
 {
+  /* Needs fixing up to use twoWheel
   float theta = radians(degrees);
   
   float distance = WHEEL_SPACING * 0.5 * theta ;
@@ -175,6 +177,7 @@ void turn( float degrees ) //  clockwise
   rightStepper.move(-steps);
   
  currentDirection += theta; 
+ */
 }
 
 

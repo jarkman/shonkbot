@@ -10,6 +10,7 @@ See http://jarkman.co.uk/catalog/robots/shonkbot.htm for more details
 
 #include <AccelStepper.h>
 #include "IRDetector.h"
+#include "TwoWheel.h"
 
 
 #define  DO_LOGGING
@@ -35,6 +36,7 @@ AccelStepper leftStepper(AccelStepper::HALF4WIRE, LEFT_IN1,LEFT_IN3,LEFT_IN2,LEF
 AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2,RIGHT_IN4); // note middle two pins are swapped!
 
 
+
 #define PIEZO_PIN 12                        // Wire a piezo sounder from pin 12 to ground
 #define COLLISION_LED_PIN 13                // Wire IR LED from pin 13 to ground
 #define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor from A0 to ground, with a 10k pullup
@@ -54,6 +56,8 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
 #define WHEEL_DIAMETER 48.0 // radius of your wheel in mm
 #define WHEEL_SPACING 150.0   // distance from one wheel to the other in mm
 
+TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
+
 
 void setup()
 {  
@@ -64,11 +68,13 @@ void setup()
   #endif
   
   collisionDetector.setup();
+  twoWheel.setup();
 
   leftStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   leftStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
+  
   
   //setupScript();
   setupWander();
@@ -84,25 +90,11 @@ void loop()
   //loopScript();
   loopWander();
   
-  leftStepper.run();
-  rightStepper.run();
-   
-}
-
-
-float stepsForDistance( float distance )
-{
-  return distance * STEPS_PER_REV / (3.1415 * WHEEL_DIAMETER);
-}
-
-float stepsForTurn( float degrees ) //  clockwise
-{
-  float theta = radians(degrees);
+  twoWheel.loop();
   
-  float distance = WHEEL_SPACING * 0.5 * theta ;
-  float steps = stepsForDistance( distance );
   
-  return steps;
 }
+
+
 
 

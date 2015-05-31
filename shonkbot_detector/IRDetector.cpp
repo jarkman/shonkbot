@@ -52,8 +52,8 @@ void IRDetector::loop()
       if( piezoPin > -1 )
       {
         int range = getRangeInCm();
-        Serial.print( " range " );
-        Serial.print( range);
+        //Serial.print( " range " );
+        //Serial.println( range);
         
         if( range != 0 )
         {
