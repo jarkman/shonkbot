@@ -31,9 +31,16 @@ class TwoWheel
   float stepsPerRev;
   float wheelDiameter;
   float wheelSpacing;
+  long stepsPerTurn;
   
   long totalForwardSteps = 0;
   long totalTurnSteps = 0;
+  
+  // Heading and position by dead reckoning
+  float heading = 0.0;  // clockwise from our starting direction pointing alog the x axis
+  float xPos;
+  float yPos;
+  
   long targetSteps;
   boolean targetIsBigger;
 
@@ -51,6 +58,7 @@ class TwoWheel
   void turnRightForever();
   
   float stepsForDistance( float distance );
+  float distanceForSteps( float steps );
   float stepsForTurn( float degrees ); //  clockwise
 
   

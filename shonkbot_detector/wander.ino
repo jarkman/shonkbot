@@ -58,8 +58,10 @@ void loopWander()
 
 void startCruising()
 {
+  #ifdef DEBUG
    Serial.println( "*****************************************************************************************************" );
    Serial.println( "startCruising " );
+#endif
 
   state = STATE_CRUISING;
   twoWheel.goForever();
@@ -67,8 +69,10 @@ void startCruising()
 
 void startBacking()
 {
+#ifdef DEBUG
   Serial.println( "*****************************************************************************************************" );
    Serial.println( "startBacking " );
+#endif
 
   state = STATE_BACKING;
   twoWheel.go( -25.0 ); // go back a bit to get away from the obstacle
@@ -76,8 +80,10 @@ void startBacking()
 
 void startTurning()
 {
+#ifdef DEBUG
   Serial.println( "*****************************************************************************************************" );
    Serial.println( "startTurning " );
+#endif
 
   state = STATE_TURNING;  
   twoWheel.turn( -90.0 );  // turn left 90 degrees
