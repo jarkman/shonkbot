@@ -53,7 +53,7 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
 #define MAX_SPEED 350 // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
 #define MAX_ACCELERATION 400 // 1600 on 5v, 400 on 3v
 
-#define WHEEL_DIAMETER 48.0 // radius of your wheel in mm
+#define WHEEL_DIAMETER 40.0   // radius of your wheel in mm - 40.00 is right for a blue wheel with a rubber band on
 #define WHEEL_SPACING 150.0   // distance from one wheel to the other in mm
 
 TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
