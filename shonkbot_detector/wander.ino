@@ -5,7 +5,10 @@
 #define STATE_BACKING 1
 #define STATE_TURNING 2
 
+//#define DO_WANDER_LOGGING
+
 int state = STATE_CRUISING;
+int turningLeft = 0;
 
 long clearSteps = -1;
 int reversingPiezoPin = PIEZO_PIN;
@@ -38,10 +41,10 @@ void loopWander()
      reversingBeep();
         
     // did we back far enough ?    
-    if( twoWheel.arrived() && range == 0)
+    if( twoWheel.arrived() )
     {
        startTurning();
-        noTone(reversingPiezoPin); // finish any left-over reversing beep
+       noTone(reversingPiezoPin); // finish any left-over reversing beep
     }
     break;
     
@@ -55,7 +58,7 @@ void loopWander()
      }
      else
      {
-       startTurning(); // still an obstacle, so we want to keep turning at least 90 more
+       keepTurning(); // still an obstacle, so we want to keep turning
      }
      break;
     
@@ -77,7 +80,7 @@ void reversingBeep()
 
 void startCruising()
 {
-  #ifdef DEBUG
+  #ifdef DO_WANDER_LOGGING
    Serial.println( "*****************************************************************************************************" );
    Serial.println( "startCruising " );
 #endif
@@ -88,7 +91,7 @@ void startCruising()
 
 void startBacking()
 {
-#ifdef DEBUG
+#ifdef DO_WANDER_LOGGING
   Serial.println( "*****************************************************************************************************" );
    Serial.println( "startBacking " );
 #endif
@@ -99,26 +102,30 @@ void startBacking()
 
 void startTurning()
 {
-#ifdef DEBUG
+#ifdef DO_WANDER_LOGGING
   Serial.println( "*****************************************************************************************************" );
    Serial.println( "startTurning " );
 #endif
 
   state = STATE_TURNING;  
-  twoWheel.turn( -90.0 );  // turn left 90 degrees
+  turningLeft = random( 0, 2 ); // 0 or 1
+  
+  keepTurning();
+
 }
 
-/*
-void turnLeft()
+void keepTurning()
 {
-  leftStepper.moveTo( leftStepper.currentPosition() + stepsForDistance( 50 )); // distance is a bit irrelevant, we will calculate a new destination next time round the loop
-  rightStepper.moveTo( rightStepper.currentPosition() + stepsForDistance( 50 ));
-}
+#ifdef DO_WANDER_LOGGING
+  Serial.println( "*****************************************************************************************************" );
+   Serial.println( "keepTurning " );
+#endif
 
-void go()
-{
-  leftStepper.moveTo( leftStepper.currentPosition()  - stepsForDistance( 50 ));
-  rightStepper.moveTo( rightStepper.currentPosition() + stepsForDistance( 50 ));
+  // Called at the start of a turn and when we find we still have an obstacle during a turn
+  int angle = random(10, 90);
+  if( turningLeft )
+    angle = -angle;
+    
+  twoWheel.turn( angle );  // turn by a random amount
 }
-*/
 
