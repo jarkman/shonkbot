@@ -51,6 +51,20 @@ void TwoWheel::loop()
   heading = (float)(totalTurnSteps % stepsPerTurn); // keep track of our overall heading
 }
 
+void TwoWheel::enable( boolean on )
+{
+  if( on )
+  {
+    leftStepper->enableOutputs();
+    rightStepper->enableOutputs();
+  }
+  else
+  {
+    leftStepper->disableOutputs();
+    rightStepper->disableOutputs();
+  }
+}
+
 void TwoWheel::go( float distance )
 {
   float steps = stepsForDistance( distance );

@@ -49,6 +49,8 @@ class TwoWheel
   void setup();
   void loop();
   
+  void enable( boolean on );
+  
   void go( float distance );
   void turn( float degrees ); //  clockwise
   boolean arrived();

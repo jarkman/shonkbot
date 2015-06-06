@@ -34,7 +34,7 @@ void setupScript()
 void loopScript()
 {
     
-  if (leftStepper.distanceToGo() == 0 && rightStepper.distanceToGo() == 0)
+  if (twoWheel.arrived())
     doNextMovement();
  
 }
@@ -50,18 +50,20 @@ void doNextMovement()
   }  
   
   if( nextMovement >= numMovements )
+  {
+    twoWheel.enable( false ); // turn off motors
     return; // finished
-  
+  }
   
   if( ! doneTurn )
   {
     doneTurn = true;
-    turn( movements[nextMovement].turn );
+    twoWheel.turn( movements[nextMovement].turn );
   }
   else   if( ! doneDistance )
   {
     doneDistance = true;
-    go( movements[nextMovement].distance );
+    twoWheel.go( movements[nextMovement].distance );
   }
  
     
@@ -136,49 +138,6 @@ void buildMovements()
   
 }
 
-
-
-
-
-void goToXY( float x, float y )
-{
-  float distance = sqrt((x - currentX)*(x - currentX) + (y -currentY)*(y -currentY));
-  
-  float theta = atan2( (y -currentY), (x - currentX)) - currentDirection;
-  
-  // TODO
-  
-}
-
-void go( float distance )
-{
-  /* Needs fixing up to use twoWheel
-  float steps = stepsForDistance( distance );
-  leftStepper.setCurrentPosition(0);
-  rightStepper.setCurrentPosition(0);
-  leftStepper.move(steps);
-  rightStepper.move(-steps);
-  
-  currentX += distance * sin( currentDirection );
-  currentY += distance * cos( currentDirection );
-  */
-}
-
-void turn( float degrees ) //  clockwise
-{
-  /* Needs fixing up to use twoWheel
-  float theta = radians(degrees);
-  
-  float distance = WHEEL_SPACING * 0.5 * theta ;
-  float steps = stepsForDistance( distance );
-  leftStepper.setCurrentPosition(0);
-  rightStepper.setCurrentPosition(0);
-  leftStepper.move(-steps);
-  rightStepper.move(-steps);
-  
- currentDirection += theta; 
- */
-}
 
 
 
