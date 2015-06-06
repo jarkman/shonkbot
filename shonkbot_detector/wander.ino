@@ -8,6 +8,7 @@
 int state = STATE_CRUISING;
 
 long clearSteps = -1;
+int reversingPiezoPin = PIEZO_PIN;
 
 void setupWander()
 {
@@ -33,8 +34,15 @@ void loopWander()
       break;
    
    case STATE_BACKING:
+   
+     reversingBeep();
+        
+    // did we back far enough ?    
     if( twoWheel.arrived() && range == 0)
+    {
        startTurning();
+        noTone(reversingPiezoPin); // finish any left-over reversing beep
+    }
     break;
     
    case STATE_TURNING:
@@ -54,6 +62,17 @@ void loopWander()
   }
   
   
+}
+
+void reversingBeep()
+{
+  // reversing beeps
+  // beep for the first 0.5s of each 1.5s period
+      long t = millis() % 1000;
+      if( t < 200 && t > 0 )
+        tone(reversingPiezoPin, 5000);
+      else
+        noTone(reversingPiezoPin);  
 }
 
 void startCruising()
