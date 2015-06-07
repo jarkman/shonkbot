@@ -3,7 +3,12 @@
 
 Shonkbot with IR object detection and a bump-and-turn action for obstacle avoidance
 
-See http://jarkman.co.uk/catalog/robots/shonkbot.htm for more details
+See 
+http://jarkman.co.uk/catalog/robots/shonkbot.htm for more details and 
+https://github.com/jarkman/shonkbot/tree/master/shonkbot_detector for the current source.
+
+You'll need the AccelStepper library, get it from 
+http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
 
 */
 
@@ -58,6 +63,9 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
 
 TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
 
+// Set one of these flags to choose our task
+boolean doScript = false;
+boolean doWander = true;
 
 void setup()
 {  
@@ -76,8 +84,10 @@ void setup()
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   
   
-  setupScript();
-  //setupWander();
+  if( doScript )
+    setupScript();
+  else if( doWander )
+    setupWander();
 }
 
 
@@ -86,9 +96,10 @@ void loop()
   collisionDetector.loop();
   
   
-  
-  loopScript();
-  //loopWander();
+  if( doScript )
+    loopScript();  
+  else if( doWander )
+    loopWander();
   
   twoWheel.loop();
   
