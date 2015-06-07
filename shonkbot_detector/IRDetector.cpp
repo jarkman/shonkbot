@@ -16,6 +16,8 @@ IRDetector::IRDetector( int8_t _ledPin, int8_t _phototransistorPin, int8_t _piez
   
   for( int p = 0; p < 4; p ++ )
     readings[p] = 0.0;
+    
+  totalReadings = 0;
   
 }
 
@@ -47,6 +49,9 @@ void IRDetector::loop()
       int r = analogRead(ptPin); // 0 to 1024
       
       readings[phase] = (readings[phase] * (float) (numSamples -1) + (float) r ) / numSamples;
+      
+      totalReadings++;
+      
       analyse();
       
       if( piezoPin > -1 )
@@ -122,6 +127,9 @@ void IRDetector::analyse()
 
 int IRDetector::getSignal() 
 {
+  if( totalReadings < 100L ) // ignore our state until we've done a full set of readings
+    return 0;
+    
   return (int) signal;
 }
 
@@ -129,7 +137,7 @@ int IRDetector::getSignal()
 
 int IRDetector::getRangeInCm() 
 {
-  int range = (int) (500.0/signal);
+  int range = (int) (500.0/(getSignal()+1)); // +1 to avoid divide-by-zero errors
   if( range < MAX_RANGE )
     return range+1;
   else

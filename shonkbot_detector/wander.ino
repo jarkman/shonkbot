@@ -1,13 +1,16 @@
 
 // Wander - cruise about, turning when an object is detected ahead of us
 
-#define STATE_CRUISING 0
-#define STATE_BACKING 1
-#define STATE_TURNING 2
+#define STATE_SELFTEST 0
+#define STATE_CRUISING 1
+#define STATE_BACKING 2
+#define STATE_TURNING 3
 
 //#define DO_WANDER_LOGGING
 
-int state = STATE_CRUISING;
+int state = STATE_SELFTEST;
+int selftestPhase = 0;
+
 int turningLeft = 0;
 boolean reversingBeepOn;
 
@@ -16,7 +19,8 @@ int reversingPiezoPin = PIEZO_PIN;
 
 void setupWander()
 {
-  startCruising();
+  state = STATE_SELFTEST;
+  selftestPhase = 0;
 }
 
 
@@ -27,6 +31,10 @@ void loopWander()
 
   switch( state )
   {
+    case STATE_SELFTEST:
+      doSelftest();
+      break;
+        
     case STATE_CRUISING:
       if( range != 0 )
       {
@@ -66,6 +74,38 @@ void loopWander()
   }
   
   
+}
+
+void doSelftest()
+{
+  if( selftestPhase == 0 )
+  {
+    selftestPhase = 1;
+    twoWheel.turn( -10 );
+  }
+  else if( selftestPhase == 1 )
+  {
+    if( twoWheel.arrived() )
+    {
+      selftestPhase = 2;
+      tone(reversingPiezoPin, 8000);
+      twoWheel.turn( 20 );
+    }
+  }
+  else if( selftestPhase == 2 )
+  {
+    if( twoWheel.arrived() )
+    {
+      noTone(reversingPiezoPin);
+      selftestPhase = 3;
+      twoWheel.turn( -10 );
+    }
+  }
+  else if( selftestPhase == 3 )
+  {
+    if( twoWheel.arrived() )
+      startCruising();
+  }
 }
 
 void reversingBeep()

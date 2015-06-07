@@ -73,6 +73,7 @@ class IRDetector
   long nextSampleTime;
   long phaseDuration;
   float readings[4]; // one for each of 4 phases
+  long totalReadings;
   float minReading;
   float maxReading;
   float numSamples;
