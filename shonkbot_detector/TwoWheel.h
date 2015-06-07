@@ -62,6 +62,8 @@ class TwoWheel
   float stepsForDistance( float distance );
   float distanceForSteps( float steps );
   float stepsForTurn( float degrees ); //  clockwise
+  
+  float getHeading();
 
   
   
