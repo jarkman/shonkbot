@@ -73,6 +73,21 @@ void addMovement( float turn, float distance )
   
 }
 
+// Functions to match Scratch for users with a bit of Scratch experience
+void move( int mm )
+{
+  addMovement( 0, mm );
+}
+
+void turnLeft( int degrees )
+{
+  addMovement( -degrees, 0 );
+}
+
+void turnRight( int degrees )
+{
+  addMovement( degrees, 0 );
+}
 
 
 

@@ -97,15 +97,36 @@ void loop()
 
 void buildPattern()
 {
-  buildStraightLine(); // use this for exploring behaviour
+   buildOneSquare();
+   
+  //buildStraightLine(); // use this for exploring behaviour
   // buildName();
   //buildSquares();
+ 
 }
+
+void buildOneSquare()
+{
+  int squareSide = 120;
+  
+  move( squareSide );
+  turnLeft( 90 );
+  move( squareSide );
+  turnLeft( 90 );
+  move( squareSide );
+  turnLeft( 90 );
+  move( squareSide );
+  turnLeft( 90 );
+  
+}
+
 
 void buildStraightLine()
 {
   addMovement( 0, -1 );
 }
+
+
 
 void buildSquares()
 {
