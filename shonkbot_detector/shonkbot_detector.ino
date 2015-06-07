@@ -63,9 +63,6 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
 
 TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
 
-// Set one of these flags to choose our task
-boolean doScript = false;
-boolean doWander = true;
 
 void setup()
 {  
@@ -83,11 +80,7 @@ void setup()
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   
-  
-  if( doScript )
-    setupScript();
-  else if( doWander )
-    setupWander();
+  setupWander();
 }
 
 
@@ -95,16 +88,117 @@ void loop()
 {
   collisionDetector.loop();
   
-  
-  if( doScript )
-    loopScript();  
-  else if( doWander )
-    loopWander();
+  loopWander();
   
   twoWheel.loop();
   
   
 }
+
+void buildPattern()
+{
+   buildOneSquare();
+   
+  //buildStraightLine(); // use this for exploring behaviour
+  // buildName();
+  //buildSquares();
+ 
+}
+
+void buildOneSquare()
+{
+  int squareSide = 120;
+  
+  move( squareSide );
+  turnLeft( 90 );
+  move( squareSide );
+  turnLeft( 90 );
+  move( squareSide );
+  turnLeft( 90 );
+  move( squareSide );
+  turnLeft( 90 );
+  
+}
+
+
+void buildStraightLine()
+{
+  addMovement( 0, -1 );
+}
+
+
+
+void buildSquares()
+{
+  int squareSide = 120;
+  
+  addMovement( -180, squareSide );
+  addMovement( -90, squareSide );
+  addMovement( -90, squareSide );
+  addMovement( -90, squareSide );
+  
+  addMovement( 180, squareSide );
+  addMovement( 90, squareSide );
+  addMovement( 90, squareSide );
+  addMovement( 90, squareSide );
+}
+
+void buildName()
+{
+  // S
+  addMovement( 90, 40 );
+  addMovement( -90, 40 );
+  addMovement( -90, 40 );
+  addMovement( 90, 40 );
+  addMovement( 90, 40 );
+  
+  addMovement( 0, 10 );
+
+  //h
+  addMovement( 90, 80 );
+  addMovement( 180, 40 );
+  addMovement( 90, 40 );
+  addMovement( 90, 40 );
+  
+  addMovement( -90, 20 );
+  
+  //o
+  addMovement( 0, 40 );
+  addMovement( -90, 40 );
+  addMovement( -90, 40 );
+  addMovement( -90, 40 );
+  addMovement( -90, 40 );
+  
+  addMovement( 0, 20 );
+
+  //n
+  addMovement( -90, 50 );
+  addMovement( 180, 10 );
+  addMovement( -90, 40 );
+  addMovement( 90, 40 );
+  
+  addMovement( -90, 20 );
+  
+  //k
+  addMovement( -90, 80 );
+  addMovement( 180, 40 );
+  addMovement( -135, 40 );
+  addMovement( 180, 40 );
+  addMovement( -90, 40 * 1.414 );
+  
+  addMovement( -45, 20 );
+  
+  //y
+  addMovement( -90, 40 );
+  addMovement( 180, 40 );
+  addMovement( -90, 40 );
+  addMovement( -90, 40 );
+  addMovement( 180, 80 );
+  addMovement( 90, 20 );
+
+  
+}
+
 
 
 

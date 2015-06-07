@@ -108,7 +108,11 @@ void TwoWheel::turn( float degrees ) //  clockwise
   rightStepper->move(-steps);
 }
   
-  
+float TwoWheel::getHeading()
+{
+  return heading;
+}
+
 boolean TwoWheel::arrived()
 {
   long pos = leftStepper->currentPosition();

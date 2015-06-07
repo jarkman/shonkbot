@@ -5,6 +5,7 @@
 #define STATE_CRUISING 1
 #define STATE_BACKING 2
 #define STATE_TURNING 3
+#define STATE_LOOK_FOR_DARK 4
 
 //#define DO_WANDER_LOGGING
 
@@ -17,10 +18,14 @@ boolean reversingBeepOn;
 long clearSteps = -1;
 int reversingPiezoPin = PIEZO_PIN;
 
+int darkestHeading;
+int brightnessAtDarkestHeading;
+
 void setupWander()
 {
   state = STATE_SELFTEST;
   selftestPhase = 0;
+  buildPattern();
 }
 
 
@@ -29,6 +34,8 @@ void loopWander()
 
  int range = collisionDetector.getRangeInCm();
 
+  boolean seeObject = range != 0 && range < 10;
+  
   switch( state )
   {
     case STATE_SELFTEST:
@@ -36,12 +43,16 @@ void loopWander()
       break;
         
     case STATE_CRUISING:
-      if( range != 0 )
+      if( seeObject )
       {
        // we see a thing! 
        startBacking();
       }
-     
+      else
+      {
+        if (twoWheel.arrived())
+          doNextMovement();
+      }
       
       break;
    
@@ -58,7 +69,7 @@ void loopWander()
     break;
     
    case STATE_TURNING:
-     if (range == 0)    // nothing there there
+     if ( ! seeObject)    // nothing there 
      {
        if( twoWheel.arrived()) // turned enough
          startCruising();      // stop turning
@@ -70,6 +81,10 @@ void loopWander()
        keepTurning(); // still an obstacle, so we want to keep turning
      }
      break;
+     
+    case STATE_LOOK_FOR_DARK:
+      keepLookingForDark();
+      break;
     
   }
   
@@ -139,7 +154,8 @@ void startCruising()
 #endif
 
   state = STATE_CRUISING;
-  twoWheel.goForever();
+  doNextMovement();
+  //twoWheel.goForever();
 }
 
 void startBacking()
@@ -180,5 +196,49 @@ void keepTurning()
     angle = -angle;
     
   twoWheel.turn( angle );  // turn by a random amount
+}
+
+void startLookingForDark()
+{
+#ifdef DO_WANDER_LOGGING
+  Serial.println( "*****************************************************************************************************" );
+   Serial.println( "startLookForDark " );
+#endif
+
+  state = STATE_LOOK_FOR_DARK;
+  
+  darkestHeading = twoWheel.getHeading();
+  brightnessAtDarkestHeading = collisionDetector.getAmbientBrightness();
+
+
+  turningLeft = random( 0, 2 ); // 0 or 1
+  
+  int angle = 360;
+  
+  if( turningLeft )
+    angle = -angle;
+    
+  twoWheel.turn( angle );  // turn by a random amount
+
+}
+
+void keepLookingForDark()
+{
+  if( ! twoWheel.arrived() )
+  {
+    // keep loooking for the darkest direciton
+   int brightness = collisionDetector.getAmbientBrightness(); 
+ 
+   if( brightness < brightnessAtDarkestHeading ) // this direction is darker, so remember it
+   {
+     brightnessAtDarkestHeading = brightness;
+     darkestHeading = twoWheel.getHeading();
+   }
+  }
+  else
+  {
+    //TODO - turn to the darkest direction then start cruising
+  }
+  
 }
 
