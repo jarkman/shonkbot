@@ -50,8 +50,8 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
                               // see http://42bots.com/tutorials/28byj-48-stepper-motor-with-uln2003-driver-and-arduino-uno/ 
                               // and http://forum.arduino.cc/index.php?topic=71964.15
 
-#define MAX_SPEED 1000 // 1000 is a sensible limit on 3 x 1.5v battery, it's probably as much as we cna expect to get from AccelStepper anyhow
-#define MAX_ACCELERATION 400 // 1600 on 5v, 400 on 3v
+#define MAX_SPEED 800 // 1000 is a sensible limit on 3 x 1.5v battery, it's probably as much as we cna expect to get from AccelStepper anyhow
+#define MAX_ACCELERATION 1000 // 1600 on 5v, 400 on 3v
 
 #define WHEEL_DIAMETER 40.0   // radius of your wheel in mm - 40.00 is right for a blue wheel with a rubber band on
 #define WHEEL_SPACING 150.0   // distance from one wheel to the other in mm
@@ -76,8 +76,8 @@ void setup()
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   
   
-  //setupScript();
-  setupWander();
+  setupScript();
+  //setupWander();
 }
 
 
@@ -87,8 +87,8 @@ void loop()
   
   
   
-  //loopScript();
-  loopWander();
+  loopScript();
+  //loopWander();
   
   twoWheel.loop();
   

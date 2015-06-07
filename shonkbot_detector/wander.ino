@@ -9,6 +9,7 @@
 
 int state = STATE_CRUISING;
 int turningLeft = 0;
+boolean reversingBeepOn;
 
 long clearSteps = -1;
 int reversingPiezoPin = PIEZO_PIN;
@@ -73,9 +74,21 @@ void reversingBeep()
   // beep for the first 0.5s of each 1.5s period
       long t = millis() % 1000;
       if( t < 200 && t > 0 )
-        tone(reversingPiezoPin, 5000);
+      {
+        //if( ! reversingBeepOn )
+        {
+          tone(reversingPiezoPin, 5000);
+          reversingBeepOn = true;
+        }
+      }
       else
-        noTone(reversingPiezoPin);  
+      {
+        if( reversingBeepOn )
+        {
+          noTone(reversingPiezoPin);  
+          reversingBeepOn = false;
+        }
+      }
 }
 
 void startCruising()
