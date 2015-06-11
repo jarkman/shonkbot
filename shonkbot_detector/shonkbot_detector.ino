@@ -72,6 +72,8 @@ void setup()
   Serial.print ("setup\n");
   #endif
   
+  randomSeed(analogRead(7));
+  
   collisionDetector.setup();
   twoWheel.setup();
 
@@ -97,12 +99,21 @@ void loop()
 
 void buildPattern()
 {
-   buildOneSquare();
+   //buildOneSquare();
+   buildPoly( random( 45, 170 ) );
    
   //buildStraightLine(); // use this for exploring behaviour
   // buildName();
   //buildSquares();
  
+}
+
+void buildPoly(int angle)
+{
+  int squareSide = 120;
+  int side = (angle / 90.0) * squareSide;
+  move( side );
+  turnLeft( angle );
 }
 
 void buildOneSquare()

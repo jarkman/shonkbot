@@ -37,7 +37,7 @@ void loopWander()
 
  int range = collisionDetector.getRangeInCm();
 
-  boolean seeObject = range != 0 && range < 10;
+  boolean seeObject = range != 0 && range < 20;
   
   switch( state )
   {
