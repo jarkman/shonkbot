@@ -48,7 +48,8 @@ void TwoWheel::loop()
   // Both steppers are negative for a clockwise turn
   totalTurnSteps -=  (newRightSteps - lastRightSteps) + (newLeftSteps - lastLeftSteps);
   
-  heading = (float)(totalTurnSteps % stepsPerTurn); // keep track of our overall heading
+  heading = (((float)totalTurnSteps) / ((float)stepsPerTurn)) * 360.0; // keep track of our overall heading in degrees
+  heading = fmod( heading, 360 ); // keep in the range -360m to 360
 }
 
 void TwoWheel::enable( boolean on )
@@ -85,7 +86,13 @@ void TwoWheel::go( float distance )
   rightStepper->move(steps);
 }
 
-void TwoWheel::turn( float degrees ) //  clockwise
+void TwoWheel::turnToHeading( float targetHeading ) // turn to the specified heading, where 0 means the way we were facing when we booted up
+{
+  float turnDegrees = (targetHeading - heading);
+  turn( turnDegrees );
+}
+
+void TwoWheel::turn( float degrees ) //  turn by 'degrees' clockwise (pass a negative number to turn anticlockwise)
 {
   float theta = radians(degrees);
   

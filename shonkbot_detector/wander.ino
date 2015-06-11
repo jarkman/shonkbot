@@ -6,6 +6,7 @@
 #define STATE_BACKING 2
 #define STATE_TURNING 3
 #define STATE_LOOK_FOR_DARK 4
+#define STATE_TURNING_TO_DARK 5
 
 //#define DO_WANDER_LOGGING
 
@@ -17,6 +18,8 @@ boolean reversingBeepOn;
 
 long clearSteps = -1;
 int reversingPiezoPin = PIEZO_PIN;
+
+//#define HIDE_IN_THE_DARK  // define this to make shonkbot look for a dark place 
 
 int darkestHeading;
 int brightnessAtDarkestHeading;
@@ -63,8 +66,20 @@ void loopWander()
     // did we back far enough ?    
     if( twoWheel.arrived() )
     {
-       startTurning();
+       
        noTone(reversingPiezoPin); // finish any left-over reversing beep
+       
+       #ifdef HIDE_IN_THE_DARK
+       
+         startLookingForDark();
+       
+       #else
+         
+         startTurning();
+       
+       #endif
+       
+       
     }
     break;
     
@@ -83,8 +98,14 @@ void loopWander()
      break;
      
     case STATE_LOOK_FOR_DARK:
-      keepLookingForDark();
+      keepLookingForDark(range);
       break;
+      
+    case STATE_TURNING_TO_DARK:
+      if( twoWheel.arrived() )
+        startCruising();
+      break;
+    
     
   }
   
@@ -207,8 +228,8 @@ void startLookingForDark()
 
   state = STATE_LOOK_FOR_DARK;
   
-  darkestHeading = twoWheel.getHeading();
-  brightnessAtDarkestHeading = collisionDetector.getAmbientBrightness();
+  darkestHeading = twoWheel.getHeading()+180;
+  brightnessAtDarkestHeading = 1024; // very bright
 
 
   turningLeft = random( 0, 2 ); // 0 or 1
@@ -218,26 +239,50 @@ void startLookingForDark()
   if( turningLeft )
     angle = -angle;
     
-  twoWheel.turn( angle );  // turn by a random amount
+  twoWheel.turn( angle );  
 
 }
 
-void keepLookingForDark()
+void keepLookingForDark(int range)
 {
   if( ! twoWheel.arrived() )
   {
-    // keep loooking for the darkest direciton
+    // must still be doing our 360 scan - keep loooking for the darkest direction
    int brightness = collisionDetector.getAmbientBrightness(); 
  
-   if( brightness < brightnessAtDarkestHeading ) // this direction is darker, so remember it
+   if( brightness < brightnessAtDarkestHeading && range == 0) // this direction is darker, so remember it
    {
      brightnessAtDarkestHeading = brightness;
      darkestHeading = twoWheel.getHeading();
+     
+      #ifdef DO_WANDER_LOGGING
+     Serial.print( "keepLookingForDark new darkest is at " );
+     Serial.println(twoWheel.getHeading());
+     #endif
+     
    }
   }
   else
   {
-    //TODO - turn to the darkest direction then start cruising
+    
+    int currentHeading = twoWheel.getHeading();
+    
+    int turnDegrees = (darkestHeading - currentHeading) % 360;
+    
+    #ifdef DO_WANDER_LOGGING
+    Serial.println( "*****************************************************************************************************" );
+    Serial.print( "keepLookingForDark done, turning from " );
+    Serial.print(currentHeading);
+    Serial.print( " to ");
+    Serial.print(darkestHeading);
+    Serial.print( " so turning by " );
+    Serial.println( turnDegrees );
+    #endif
+
+    // have completed scan, so turn to the darkest direction then start cruising
+    state = STATE_TURNING_TO_DARK;
+    
+    twoWheel.turnToHeading( darkestHeading );  
   }
   
 }
