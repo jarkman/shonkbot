@@ -53,6 +53,8 @@ class TwoWheel
   
   void go( float distance );
   void turn( float degrees ); //  clockwise
+  void turnToHeading( float targetHeading );
+  
   boolean arrived();
   
   void goForever();

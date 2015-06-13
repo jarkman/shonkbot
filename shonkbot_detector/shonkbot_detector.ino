@@ -43,8 +43,8 @@ AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2
 
 
 #define PIEZO_PIN 12                        // Wire a piezo sounder from pin 12 to ground
-#define COLLISION_LED_PIN 13                // Wire IR LED from pin 13 to ground
-#define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor from A0 to ground, with a 10k pullup
+#define COLLISION_LED_PIN 13                // Wire IR LED, long leg to pin 13, short leg to ground
+#define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor collector (short leg) to A0 , emitter (long leg) to ground, with a 10k pullup from A0 to +5
 #define COLLISION_FREQUENCY 75              // Use 75 hz for collision detection
 
 IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
@@ -72,6 +72,8 @@ void setup()
   Serial.print ("setup\n");
   #endif
   
+  randomSeed(analogRead(7));
+  
   collisionDetector.setup();
   twoWheel.setup();
 
@@ -97,12 +99,21 @@ void loop()
 
 void buildPattern()
 {
-   buildOneSquare();
+   //buildOneSquare();
+   buildPoly( random( 45, 170 ) );
    
   //buildStraightLine(); // use this for exploring behaviour
   // buildName();
   //buildSquares();
  
+}
+
+void buildPoly(int angle)
+{
+  int squareSide = 120;
+  int side = (angle / 90.0) * squareSide;
+  move( side );
+  turnLeft( angle );
 }
 
 void buildOneSquare()
