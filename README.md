@@ -5,8 +5,8 @@ A collaboration by various Bristol Hackspace members.
 
 See 
 
-* [images and video](http://jarkman.co.uk/catalog/robots/shonkbot.htm)
-* [detailed instructions](http://bit.ly/1GEuDTD) (written for Digimakers)
+* [Images and video](http://jarkman.co.uk/catalog/robots/shonkbot.htm)
+* [Detailed contstruction instructions](http://bit.ly/1GEuDTD) (written for Digimakers)
 
 # Software
 
