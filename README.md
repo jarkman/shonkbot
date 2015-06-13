@@ -3,14 +3,10 @@
 A supercheap Arduino-based 2-wheel robot for robot workshop purposes.
 A collaboration by various Bristol Hackspace members.
 
-See
- http://jarkman.co.uk/catalog/robots/shonkbot.htm
+See 
 
-for images and video and
-
- http://bit.ly/1GEuDTD
-
-for Digimakers detailed instructions
+* [images and video](http://jarkman.co.uk/catalog/robots/shonkbot.htm)
+* [detailed instructions)[http://bit.ly/1GEuDTD] (written for Digimakers)
 
 # Software
 
