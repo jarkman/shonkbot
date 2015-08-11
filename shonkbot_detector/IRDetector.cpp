@@ -64,12 +64,14 @@ void IRDetector::loop()
         {
            toneFrequency = ((MAX_RANGE - range) + 20) * 100;
            
-          tone(piezoPin, toneFrequency);
+           if( piezoPin >= 0 )
+              tone(piezoPin, toneFrequency);
         }
         else
         {
           if( toneFrequency != 0 )
-            noTone(piezoPin);
+            if( piezoPin >= 0 )
+              noTone(piezoPin);
             
           toneFrequency = 0;
         }

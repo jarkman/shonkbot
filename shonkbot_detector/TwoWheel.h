@@ -31,6 +31,7 @@ class TwoWheel
   float stepsPerRev;
   float wheelDiameter;
   float wheelSpacing;
+  int maxSpeed;
   long stepsPerTurn;
   
   long totalForwardSteps = 0;
@@ -45,13 +46,14 @@ class TwoWheel
   boolean targetIsBigger;
 
   public:
-  TwoWheel( AccelStepper *leftStepper, AccelStepper *rightStepper, float stepsPerRev, float wheelDiameter, float wheelSpacing );
+  TwoWheel( AccelStepper *leftStepper, AccelStepper *rightStepper, float stepsPerRev, float wheelDiameter, float wheelSpacing, int maxSpeed );
   void setup();
   void loop();
   
   void enable( boolean on );
   
   void go( float distance );
+  void go( float distance, float curvature );
   void turn( float degrees ); //  clockwise
   void turnToHeading( float targetHeading );
   

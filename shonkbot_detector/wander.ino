@@ -35,9 +35,10 @@ void setupWander()
 void loopWander()
 {
 
- int range = collisionDetector.getRangeInCm();
+ int collisionRange = collisionDetector.getRangeInCm();
+ int swarmRange = swarmDetector.getRangeInCm();
 
-  boolean seeObject = range != 0 && range < 20;
+  boolean seeObject = collisionRange != 0 && collisionRange < 20;
   
   switch( state )
   {
@@ -98,7 +99,7 @@ void loopWander()
      break;
      
     case STATE_LOOK_FOR_DARK:
-      keepLookingForDark(range);
+      keepLookingForDark(collisionRange);
       break;
       
     case STATE_TURNING_TO_DARK:

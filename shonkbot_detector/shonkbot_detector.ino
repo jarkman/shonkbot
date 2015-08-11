@@ -44,10 +44,14 @@ AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2
 
 #define PIEZO_PIN 12                        // Wire a piezo sounder from pin 12 to ground
 #define COLLISION_LED_PIN 13                // Wire IR LED, long leg to pin 13, short leg to ground
+#define SWARM_LED_PIN 11                    // Wire IR LED, long leg to pin 11, short leg to ground
 #define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor collector (short leg) to A0 , emitter (long leg) to ground, with a 10k pullup from A0 to +5
+
 #define COLLISION_FREQUENCY 75              // Use 75 hz for collision detection
+#define SWARM_FREQUENCY (COLLISION_FREQUENCY*3)  // 
 
 IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
+IRDetector swarmDetector(SWARM_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, -1, SWARM_FREQUENCY);
 
 // using 28BYj-48 motors from http://www.ebay.co.uk/itm/131410728499
 
@@ -61,7 +65,7 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
 #define WHEEL_DIAMETER 40.0   // radius of your wheel in mm - 40.00 is right for a blue wheel with a rubber band on
 #define WHEEL_SPACING 150.0   // distance from one wheel to the other in mm
 
-TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
+TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING, MAX_SPEED );
 
 
 void setup()
@@ -72,9 +76,10 @@ void setup()
   Serial.print ("setup\n");
   #endif
   
-  randomSeed(analogRead(7));
+  randomSeed(analogRead(COLLISION_PHOTOTRANSISTOR_PIN));  // use ambient IR as a source of randomness
   
   collisionDetector.setup();
+  swarmDetector.setup();
   twoWheel.setup();
 
   leftStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
@@ -89,6 +94,7 @@ void setup()
 void loop()
 {
   collisionDetector.loop();
+  swarmDetector.loop();
   
   loopWander();
   
@@ -100,7 +106,8 @@ void loop()
 void buildPattern()
 {
    //buildOneSquare();
-   buildPoly( random( 45, 170 ) );
+   //buildPoly( random( 45, 170 ) );
+   buildCurvahedron( random( 45, 170 ) );
    
   //buildStraightLine(); // use this for exploring behaviour
   // buildName();
@@ -113,6 +120,17 @@ void buildPoly(int angle)
   int squareSide = 120;
   int side = (angle / 90.0) * squareSide;
   move( side );
+  turnLeft( angle );
+}
+
+void buildCurvahedron(int angle)
+{
+  int squareSide = 120;
+  int side = (angle / 90.0) * squareSide;
+  
+  float curvature = (random(100)/100.0) - 0.5; // set curvature to a random number between -0.5 and 0.5
+  
+  curve( side, curvature );
   turnLeft( angle );
 }
 

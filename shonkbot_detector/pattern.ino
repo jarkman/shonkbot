@@ -5,6 +5,7 @@ class movement
   public:
   int turn;
   int distance;
+  float curvature;
 };
 #define MAX_MOVEMENTS 40
 
@@ -52,7 +53,7 @@ void doNextMovement()
     doneDistance = true;
     int distance = movements[nextMovement].distance;
     if( distance >= 0 )
-      twoWheel.go( distance );
+      twoWheel.go( distance, movements[nextMovement].curvature );
     else
       twoWheel.goForever( );
   }
@@ -64,13 +65,26 @@ void doNextMovement()
 
 void addMovement( float turn, float distance )
 {
+  addMovement( turn, distance, 0.0 );
+}
+
+
+void addMovement( float turn, float distance, float curvature )
+{
   if( numMovements >= MAX_MOVEMENTS )
     return;
     
   movements[numMovements].turn = turn;
   movements[numMovements].distance = distance;
+  movements[numMovements].curvature = curvature;
   numMovements++;
   
+}
+
+
+void curve( int mm, float curvature )
+{
+  addMovement( 0, mm, curvature );
 }
 
 // Functions to match Scratch for users with a bit of Scratch experience

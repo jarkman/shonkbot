@@ -2,13 +2,14 @@
 
 
 
-TwoWheel::TwoWheel( AccelStepper *_leftStepper, AccelStepper *_rightStepper, float _stepsPerRev, float _wheelDiameter, float _wheelSpacing )
+TwoWheel::TwoWheel( AccelStepper *_leftStepper, AccelStepper *_rightStepper, float _stepsPerRev, float _wheelDiameter, float _wheelSpacing, int _maxSpeed )
 {
   leftStepper = _leftStepper;
   rightStepper = _rightStepper;
   stepsPerRev = _stepsPerRev;
   wheelDiameter = _wheelDiameter;
   wheelSpacing = _wheelSpacing;
+  maxSpeed = _maxSpeed;
   stepsPerTurn = stepsForTurn( 360.0 );
   heading  = 0.0;
   xPos = 0.0;
@@ -68,6 +69,11 @@ void TwoWheel::enable( boolean on )
 
 void TwoWheel::go( float distance )
 {
+  go( distance, 0.0  );
+}
+
+void TwoWheel::go( float distance, float curvature )
+{
   float steps = stepsForDistance( distance );
   
   targetSteps = leftStepper->currentPosition() - steps;
@@ -82,12 +88,26 @@ void TwoWheel::go( float distance )
    Serial.println( targetIsBigger );
  */
  
-  leftStepper->move(-steps);
-  rightStepper->move(steps);
+ // avoid extreme curvatures that make the maths go wrong
+  if( curvature < -0.8 )
+    curvature = -0.8;
+  if( curvature > 0.8 )
+    curvature = 0.8;
+    
+  float leftRatio = 1.0 - curvature;
+  float rightRatio = 1.0 + curvature;
+  
+  //TODO - could avoid overspeed with extreme curvature by scaling down both speeds here ?
+  leftStepper->setMaxSpeed(maxSpeed*leftRatio);
+  rightStepper->setMaxSpeed(maxSpeed*rightRatio);
+ 
+  leftStepper->move(-steps*leftRatio);
+  rightStepper->move(steps*rightRatio);
 }
 
 void TwoWheel::turnToHeading( float targetHeading ) // turn to the specified heading, where 0 means the way we were facing when we booted up
 {
+
   float turnDegrees = (targetHeading - heading);
   turn( turnDegrees );
 }
@@ -110,6 +130,9 @@ void TwoWheel::turn( float degrees ) //  turn by 'degrees' clockwise (pass a neg
    Serial.print( " targetIsBigger " );
    Serial.println( targetIsBigger );
    */
+     
+  leftStepper->setMaxSpeed(maxSpeed);
+  rightStepper->setMaxSpeed(maxSpeed);
      
   leftStepper->move(-steps);
   rightStepper->move(-steps);
@@ -143,8 +166,11 @@ void TwoWheel::goForever()
    Serial.println( "goForever " );
  #endif
  
-  leftStepper->move(-MAX_STEPS);
-  rightStepper->move(MAX_STEPS);
+  leftStepper->setMaxSpeed(maxSpeed);
+  rightStepper->setMaxSpeed(maxSpeed);
+  
+  leftStepper->move(-maxSpeed);
+  rightStepper->move(maxSpeed);
 }
   
 void TwoWheel::turnLeftForever()
@@ -158,6 +184,9 @@ void TwoWheel::turnLeftForever()
     targetSteps = MAX_STEPS;
   targetIsBigger = true;
 
+  leftStepper->setMaxSpeed(maxSpeed);
+  rightStepper->setMaxSpeed(maxSpeed);
+  
   leftStepper->move(MAX_STEPS);
   rightStepper->move(MAX_STEPS);
 }
@@ -173,6 +202,9 @@ void TwoWheel::turnRightForever()
     targetSteps = -MAX_STEPS;
     targetIsBigger = false;
 
+  leftStepper->setMaxSpeed(maxSpeed);
+  rightStepper->setMaxSpeed(maxSpeed);
+  
   leftStepper->move(-MAX_STEPS);
   rightStepper->move(-MAX_STEPS);
 
