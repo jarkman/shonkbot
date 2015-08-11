@@ -63,6 +63,9 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
 
 TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
 
+#define MODE_WANDER 0
+#define MODE_LINE_FOLLOW 1
+byte mode = MODE_WANDER;
 
 void setup()
 {  
@@ -72,28 +75,36 @@ void setup()
   Serial.print ("setup\n");
   #endif
   
-  randomSeed(analogRead(7));
-  
-  collisionDetector.setup();
+  randomSeed(analogRead(6));
+
   twoWheel.setup();
 
   leftStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   leftStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
-  
-  setupWander();
+
+  if (analogRead(7) > 700) {
+    mode = MODE_LINE_FOLLOW;
+    setupLineFollow();
+  } else {
+    mode = MODE_WANDER;
+    collisionDetector.setup();
+    setupWander();
+  }
 }
 
 
 void loop()
 {
-  collisionDetector.loop();
-  
-  loopWander();
+  if (mode == MODE_WANDER) {
+    collisionDetector.loop();
+    loopWander();
+  } else {
+    loopLineFollow();
+  }
   
   twoWheel.loop();
-  
   
 }
 
