@@ -18,6 +18,13 @@ int numMovements = 0;
 
 
 
+void doFirstMovement()
+{
+   doneTurn = false;
+    doneDistance = false;
+    nextMovement = 0;
+}
+
 void doNextMovement()
 {
 

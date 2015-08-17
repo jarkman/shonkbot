@@ -39,6 +39,7 @@ void loopWander()
  int swarmRange = swarmDetector.getRangeInCm();
 
   boolean seeObject = collisionRange != 0 && collisionRange < 20;
+  boolean seeShonkbot = swarmRange != 0;
   
   switch( state )
   {
@@ -47,7 +48,11 @@ void loopWander()
       break;
         
     case STATE_CRUISING:
-      if( seeObject )
+      if( seeShonkbot )
+      {
+        doFirstMovement();
+      }
+      else if( seeObject )
       {
        // we see a thing! 
        startBacking();

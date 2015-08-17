@@ -48,10 +48,10 @@ AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2
 #define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor collector (short leg) to A0 , emitter (long leg) to ground, with a 10k pullup from A0 to +5
 
 #define COLLISION_FREQUENCY 75              // Use 75 hz for collision detection
-#define SWARM_FREQUENCY (COLLISION_FREQUENCY*3)  // 
+#define SWARM_FREQUENCY 65  // 
 
-IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
-IRDetector swarmDetector(SWARM_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, -1, SWARM_FREQUENCY);
+IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, -1, COLLISION_FREQUENCY);
+IRDetector swarmDetector(SWARM_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, SWARM_FREQUENCY);
 
 // using 28BYj-48 motors from http://www.ebay.co.uk/itm/131410728499
 
