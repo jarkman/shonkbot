@@ -76,7 +76,6 @@ void TwoWheel::go( float distance, float curvature )
 {
   float steps = stepsForDistance( distance );
   
-  targetSteps = leftStepper->currentPosition() - steps;
   targetIsBigger = steps < 0;
   
   /*
@@ -97,11 +96,15 @@ void TwoWheel::go( float distance, float curvature )
   float leftRatio = 1.0 - curvature;
   float rightRatio = 1.0 + curvature;
   
+  float leftSteps = -steps*leftRatio;
+  
+  targetSteps = leftStepper->currentPosition() + leftSteps;
+
   //TODO - could avoid overspeed with extreme curvature by scaling down both speeds here ?
   leftStepper->setMaxSpeed(maxSpeed*leftRatio);
   rightStepper->setMaxSpeed(maxSpeed*rightRatio);
  
-  leftStepper->move(-steps*leftRatio);
+  leftStepper->move(leftSteps);
   rightStepper->move(steps*rightRatio);
 }
 

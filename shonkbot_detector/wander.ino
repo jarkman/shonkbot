@@ -31,6 +31,7 @@ void setupWander()
   buildPattern();
 }
 
+boolean sawShonkbot = false;
 
 void loopWander()
 {
@@ -41,6 +42,12 @@ void loopWander()
   boolean seeObject = collisionRange != 0 && collisionRange < 20;
   boolean seeShonkbot = swarmRange != 0;
   
+  boolean seeNewShonkbot = seeShonkbot && ! sawShonkbot;
+  
+  sawShonkbot = seeShonkbot;
+  
+  seeNewShonkbot = false; // this line turns off all attempts at swarming
+  
   switch( state )
   {
     case STATE_SELFTEST:
@@ -48,9 +55,9 @@ void loopWander()
       break;
         
     case STATE_CRUISING:
-      if( seeShonkbot )
+      if( seeNewShonkbot )
       {
-        doFirstMovement();
+        doFirstMovement(); // start heading towards it
       }
       else if( seeObject )
       {
@@ -92,7 +99,11 @@ void loopWander()
    case STATE_TURNING:
      if ( ! seeObject)    // nothing there 
      {
-       if( twoWheel.arrived()) // turned enough
+       if( seeNewShonkbot )
+      {
+        doFirstMovement(); // start heading towards it
+      }
+      else if( twoWheel.arrived()) // turned enough
          startCruising();      // stop turning
        else
          ; // do nothing, still turning to do  

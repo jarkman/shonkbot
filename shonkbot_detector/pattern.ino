@@ -25,6 +25,7 @@ void doFirstMovement()
     nextMovement = 0;
 }
 
+
 void doNextMovement()
 {
 
