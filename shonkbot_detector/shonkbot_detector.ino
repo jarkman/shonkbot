@@ -51,7 +51,11 @@ AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2
 #define SWARM_FREQUENCY 30  // 
 
 IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
+
+#ifdef DO_SWARM
+// Swarming is mostly coded, but the frequency discrimination is not working well enough, so I've ifdefed it out for now
 IRDetector swarmDetector(SWARM_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, -1, SWARM_FREQUENCY);
+#endif
 
 // using 28BYj-48 motors from http://www.ebay.co.uk/itm/131410728499
 
@@ -79,7 +83,9 @@ void setup()
   randomSeed(analogRead(COLLISION_PHOTOTRANSISTOR_PIN));  // use ambient IR as a source of randomness
   
   collisionDetector.setup();
+  #ifdef DO_SWARM
   swarmDetector.setup();
+  #endif
   twoWheel.setup();
 
   leftStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
@@ -94,8 +100,9 @@ void setup()
 void loop()
 {
   collisionDetector.loop();
+  #ifdef DO_SWARM
   swarmDetector.loop();
-  
+  #endif
   loopWander();
   
   twoWheel.loop();

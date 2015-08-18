@@ -37,12 +37,19 @@ boolean seeShonkbot = false;
 void loopWander()
 {
   boolean seeObject = false;
+  int swarmRange = 0;
 
  int collisionRange = collisionDetector.getRangeInCm();
- int swarmRange = swarmDetector.getRangeInCm();
-
-  seeObject = collisionRange != 0 && collisionRange < 20;
-  seeShonkbot = swarmRange != 0;
+ seeObject = collisionRange != 0 && collisionRange < 20;
+ 
+   #ifdef DO_SWARM
+    swarmRange = swarmDetector.getRangeInCm();
+    seeShonkbot = swarmRange != 0;
+  #else
+    seeShonkbot = false;
+  #endif
+  
+  
   
   if( seeObject && seeShonkbot )
     if( collisionRange < swarmRange ) // if we see both, take the closest 
