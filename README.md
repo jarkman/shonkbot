@@ -7,7 +7,7 @@ See
 
 * [Images and video](http://jarkman.co.uk/catalog/robots/shonkbot.htm)
 * [Detailed construction instuctions](https://docs.google.com/document/d/1Y1hGiGaJtApV0hxRIG7Nc1STsIToJKDkXVcSrjUtcPU/edit) (written for Bristol Mini Maker Faire)
-* Previous instructions [written for Digimakers](http://bit.ly/1GEuDTD) [written for Bristol Hackspace Skillshare](http://bit.ly/1N9sv5e)
+* Previous instructions [written for Digimakers](http://bit.ly/1GEuDTD); [written for Bristol Hackspace Skillshare](http://bit.ly/1N9sv5e)
 
 # Software
 
