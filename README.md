@@ -22,6 +22,8 @@ You need this library for the stepper motors:
  http://www.airspayce.com/mikem/arduino/AccelStepper/
  http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.47.zip
 
+A common problem is that the micro USB cable you use to upload the code to the Arduino MUST be a data cable not just a power cable.
+
 # Install
 
  * clone the [Shonkbot code](https://github.com/jarkman/shonkbot) from github
@@ -29,5 +31,6 @@ You need this library for the stepper motors:
  * download the AccelStepper library ([zip](http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.47.zip)) and [import the library into the IDE](http://www.arduino.cc/en/Guide/Libraries)
  * select "arduino nano" for your board in the IDE
  * plug the Arduino into the computer using a mini USB cable
- * locate the serial port. If you're using the Arduino clones we gave you, on a Mac you'll need to [download drivers](http://kiguino.moos.io/2014/12/31/how-to-use-arduino-nano-mini-pro-with-CH340G-on-mac-osx-yosemite.html). Windows and Linux should just work.
- * upload the code to the board using the IDE
+ * locate the serial port. If you're using the Arduino clones we gave you, on a Mac you'll need to [download drivers](http://kiguino.moos.io/2014/12/31/how-to-use-arduino-nano-mini-pro-with-CH340G-on-mac-osx-yosemite.html). Windows and Linux _may_ just work; On some versions of Windows you may have to explicitly allow the system to install the drivers.
+ * open https://github.com/jarkman/shonkbot/blob/master/shonkbot_detector/shonkbot_detector.ino in the IDE
+ * upload changes to the code to the board using the IDE
