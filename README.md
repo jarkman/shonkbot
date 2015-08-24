@@ -22,7 +22,7 @@ You need this library for the stepper motors:
  http://www.airspayce.com/mikem/arduino/AccelStepper/
  http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.47.zip
 
-A common problem is that the micro USB cable you use to upload the code to the Arduino MUST be a data cable not just a power cable.
+A common problem is that the micro USB cable you use to upload the code to the Arduino MUST be a data cable not just a power cable. If you do the steps below and don't find a serial port, that may be the issue.
 
 # Install
 
