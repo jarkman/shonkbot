@@ -32,5 +32,5 @@ A common problem is that the micro USB cable you use to upload the code to the A
  * select "arduino nano" for your board in the IDE
  * plug the Arduino into the computer using a mini USB cable
  * locate the serial port. If you're using the Arduino clones we gave you, on a Mac you'll need to [download drivers](http://kiguino.moos.io/2014/12/31/how-to-use-arduino-nano-mini-pro-with-CH340G-on-mac-osx-yosemite.html). Windows and Linux _may_ just work; On some versions of Windows you may have to explicitly allow the system to install the drivers.
- * open https://github.com/jarkman/shonkbot/blob/master/shonkbot_detector/shonkbot_detector.ino in the IDE
+ * open shonkbot_detector/shonkbot_detector.ino in the IDE
  * upload changes to the code to the board using the IDE
