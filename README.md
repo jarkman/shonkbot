@@ -28,7 +28,7 @@ A common problem is that the micro USB cable you use to upload the code to the A
 
  * clone the [Shonkbot code](https://github.com/jarkman/shonkbot) from github
  * open shonkbot/shonkbot_detector/shonkbot_detector.ino in the Arduino IDE
- * download the AccelStepper library ([zip](http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.47.zip)) and [import the library into the IDE](http://www.arduino.cc/en/Guide/Libraries)
+ * download the [AccelStepper library](http://www.airspayce.com/mikem/arduino/AccelStepper/index.html) ([zip](http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.47.zip)) and [import the library into the IDE](http://www.arduino.cc/en/Guide/Libraries)
  * select "arduino nano" for your board in the IDE
  * plug the Arduino into the computer using a mini USB cable
  * locate the serial port. If you're using the Arduino clones we gave you, on a Mac you'll need to [download drivers](http://kiguino.moos.io/2014/12/31/how-to-use-arduino-nano-mini-pro-with-CH340G-on-mac-osx-yosemite.html). Windows and Linux _may_ just work; On some versions of Windows you may have to explicitly allow the system to install the drivers.
