@@ -6,8 +6,8 @@ A collaboration by various Bristol Hackspace members.
 See 
 
 * [Images and video](http://jarkman.co.uk/catalog/robots/shonkbot.htm)
-* [Detailed contstruction instructions](http://bit.ly/1N9sv5e) (written for Bristol Hackspace Skillshare)
-* [Previous instructions](http://bit.ly/1GEuDTD) (written for Digimakers)
+* [Detailed construction instuctions](https://docs.google.com/document/d/1Y1hGiGaJtApV0hxRIG7Nc1STsIToJKDkXVcSrjUtcPU/edit) (written for Bristol Mini Maker Faire)
+* Previous instructions [written for Digimakers](http://bit.ly/1GEuDTD) [written for Bristol Hackspace Skillshare](http://bit.ly/1N9sv5e)
 
 # Software
 
@@ -18,7 +18,7 @@ If you have a Mac, you need drivers for the Arduino clones (CH340G)
  http://kiguino.moos.io/2014/12/31/how-to-use-arduino-nano-mini-pro-with-CH340G-on-mac-osx-yosemite.html
  -> http://kiguino.moos.io/downloads/CH341SER_MAC.ZIP
 
-You need this library for the stepper motors:
+You need this _particular_ library for the stepper motors:
  http://www.airspayce.com/mikem/arduino/AccelStepper/
  http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.47.zip
 
