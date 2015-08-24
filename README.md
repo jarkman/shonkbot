@@ -1,7 +1,7 @@
 # Shonkbot
 
 A supercheap Arduino-based 2-wheel robot for robot workshop purposes.
-A collaboration by various Bristol Hackspace members.
+A collaboration by various Bristol Hackspace members. Designed by Richard Sewell.
 
 See 
 
