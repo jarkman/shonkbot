@@ -2,6 +2,8 @@
 
 ![Quickshonk from the front](doc/front.jpg)
 
+*[Video](https://secure.flickr.com/photos/nicecupoftea/19958858401/) of quickshonk bumbling about*
+
 A slight variation on the [normal shonkbot](https://github.com/jarkman/shonkbot);
 this one is:
 
