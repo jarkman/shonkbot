@@ -29,13 +29,20 @@ a good or a bad thing depending on how you look at it.
 
 # Parts/changes
 
- * AccelStepper is not used.
- * [Ultrasonic-HC-SR04](https://github.com/JRodrigoTech/Ultrasonic-HC-SR04) is
-needed.
- * No stepper motors, no stepper motor drivers, (currently) no LEDs
- * An SN754410 or L293D ([£0.32](http://www.ebay.co.uk/itm/141663342419) to [£1.80](http://www.hobbytronics.co.uk/h-bridge-driver-sn754410) depending on how many/delivery speed)
+Shonkbot's stepper motors, stepper motor drivers and (currently) LEDs
+aren't used; instead of those you'll need...
+
+ * An SN754410 or L293D ([£0.32](http://www.ebay.co.uk/itm/141663342419) to
+   [£1.80](http://www.hobbytronics.co.uk/h-bridge-driver-sn754410) depending
+   on how many/delivery speed)
  * 2 x [TT gearhead motor](http://www.ebay.co.uk/itm/391083333774) (~£2)
  * An [HC-SR04 ultrasonic rangefinder](http://www.ebay.co.uk/itm/301559167417) (~£1)
+
+Library changes:
+
+ * AccelStepper is not used.
+ * [Ultrasonic-HC-SR04](https://github.com/JRodrigoTech/Ultrasonic-HC-SR04) is
+   needed.
 
 # Wiring
 
@@ -59,19 +66,22 @@ of them are working, he gives up, stops and sulks/cries until power-cycled.
    wildly.  He has particular problems with approaching surfaces at 45&deg; to
    his direction of motion.  Both might be improved upon by:
     * using [a better ultrasonic library](https://code.google.com/p/arduino-new-ping/)
-      (this would also solve licence incompatibility with the existing library)
     * a capacitor close to the module to suppress noise
     * switching to IR for proximity (which might also let quickshonk swarm
       with shonkbot)
  * Couldn't be too hard to adapt quickshonk's higher-level calls to match
-   shonkbot's.
+   shonkbot's so they can share more code --- like swarming, and maybe
+   barnoid's line-following mode.
+ * Would be nice to incorporate or emulate barnoid's line-following version.
  * On the only bot built, the left/right motor speeds vary considerably (maybe
    hot glue got in one gearhead?) and existing calibration for that is either
    broken or insufficient.  This leaves quickshonk with a strong pull to the
    left.
+ * I think the code might be neater with some kind of event queue or
+   thread emulation framework.
 
 # Licence/Credit
 
-Code: [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)
+Code: [MPLv3](https://www.mozilla.org/MPL/2.0/)
 
 Image: [Libby Miller](https://secure.flickr.com/photos/nicecupoftea/19372033234/in/photostream/), [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/2.0/)

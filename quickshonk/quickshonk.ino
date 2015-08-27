@@ -1,5 +1,8 @@
-// 45678901234567890123456789012345678901234567890123456789012345678901234567890
-//       1         2         3         4         5         6         7         8
+// Copyright 2015 Isaac Wilcox.
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
 #include <stdlib.h> // qsort
 
 // Pin definitions
@@ -16,6 +19,7 @@ const unsigned RANGER_INITIATE = A0;
 // Connected to the HC-SR04's Echo pin.
 const unsigned RANGER_RESULT = A1;
 
+// For RNG seeding.
 const unsigned UNUSED_ANALOGUE = A4;
 
 // Universal constants
@@ -62,9 +66,10 @@ enum wheel_action {
   FORWARDS = 1
 };
 
-void engage(wheel_action left, wheel_action right, unsigned duration);
+// The Arduino IDE compilation fudges that normally allow a function to be used
+// before it's declared are not sufficient to allow custom types to be used, so
+// we have to declare things that use wheel_action.
 void pivot(int degrees, wheel_action turn);
-void spivot(int degrees, wheel_action turn);
 
 // PWM under ~100 won't overcome gear slop.
 // PWM under ~150 won't overcome gear slop/bot's own weight.
@@ -163,7 +168,6 @@ void loop() {
   }
 }
 
-// Should connect up the piezo and use that really.
 void stop_and_cry() {
   while (true) {
     digitalWrite(LED_BUILTIN, HIGH);
@@ -183,13 +187,6 @@ void stop_and_cry() {
 
 void reverse_beep() {
   tone(PIEZO_PIN, 1800, 700);
-/*  tone(PIEZO_PIN, 1800);
-
-
-  delay(700);
-  noTone(PIEZO_PIN);
-  delay(700);
-  */
 }
 
 // All of these return distance to horizon in mm, or -1 if range cannot be
@@ -270,6 +267,10 @@ int slow_horizon() {
   return ranges[SAMPLES/2];
 }
 
+// A bit ugly to hide these declarations down here, but they only cloud
+// the code if grouped with pivot up above.
+void spivot(int degrees, wheel_action turn);
+void engage(wheel_action left, wheel_action right, unsigned duration);
 
 void spin(int degrees) {
   spivot(degrees, NOTHING);
@@ -294,9 +295,10 @@ void retreat(unsigned mm) {
   engage(BACKWARDS, BACKWARDS, duration);
 }
 
-// 'turn' is a bit overridden, but broadly describes the net *movement* of the
-// bot; a spin does NOTHING to the bot's position, only orientation; a pivot
-// can move forwards or backwards (a bit, while also changing orientation).
+// Spin/pivot.  'turn' is a bit overridden, but broadly describes the net
+// *movement* of the bot; a spin does (the wheel_action) 'NOTHING' to the bot's
+// position, only orientation; a pivot can move forwards or backwards (a bit,
+// while also changing orientation).
 void spivot(int degrees, wheel_action turn) {
   if (abs(degrees) >= 360) {
     degrees %= 360;
