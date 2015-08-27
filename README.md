@@ -82,6 +82,6 @@ of them are working, he gives up, stops and sulks/cries until power-cycled.
 
 # Licence/Credit
 
-Code: [MPLv3](https://www.mozilla.org/MPL/2.0/)
+Code: [MPLv2](https://www.mozilla.org/MPL/2.0/)
 
 Image: [Libby Miller](https://secure.flickr.com/photos/nicecupoftea/19372033234/in/photostream/), [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/2.0/)
