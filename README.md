@@ -57,7 +57,7 @@ no step-by-step like shonkbot has; sorry.
 
 Quickshonk currently just wanders about avoiding bumping into walls, and tries
 a couple of manoeuvres to escape if he thinks he's stuck.  If he decides none
-of them are working, he gives up, stops and sulks/cries until power-cycled.
+of them are working, he gives up, stops and sulks/cries until reset or power-cycled.
 
 # Improvements
 
