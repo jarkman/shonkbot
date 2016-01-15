@@ -74,14 +74,20 @@ of them are working, he gives up, stops and sulks/cries until reset or power-cyc
    barnoid's line-following mode.
  * Would be nice to incorporate or emulate barnoid's line-following version.
  * On the only bot built, the left/right motor speeds vary considerably (maybe
-   hot glue got in one gearhead?) and existing calibration for that is either
-   broken or insufficient.  This leaves quickshonk with a strong pull to the
-   left.
+   hot glue got in one gearhead?) and existing calibration for that only
+   affects turns, not forward/reverse.  This leaves quickshonk with a strong
+   pull to the left.
  * I think the code might be neater with some kind of event queue or
    thread emulation framework.
+ * Libby made a mini version on a smaller CD, which lacks a pen but is very
+   nimble because smaller wheel separation lets it spin much faster:
+
+![Mini quickshonk](doc/mini.jpg)
+
+*Original image is [here](https://www.flickr.com/photos/nicecupoftea/23648559483).*
 
 # Licence/Credit
 
 Code: [MPLv2](https://www.mozilla.org/MPL/2.0/)
 
-Image: [Libby Miller](https://secure.flickr.com/photos/nicecupoftea/19372033234/in/photostream/), [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/2.0/)
+Images: [Libby Miller](https://secure.flickr.com/photos/nicecupoftea/), [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/2.0/)
