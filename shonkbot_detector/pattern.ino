@@ -15,6 +15,7 @@ int nextMovement = 0;
 boolean doneTurn = false;
 boolean doneDistance = false;
 int numMovements = 0;
+int keep_looping = 0; //1 for infinite
 
 
 
@@ -35,10 +36,10 @@ void doNextMovement()
     doneDistance = false;
     nextMovement ++;
   }  
-  
+
   if( nextMovement >= numMovements )
   {
-    if( true )
+    if( keep_looping == 1)
     {
       // loop
       nextMovement = 0;
