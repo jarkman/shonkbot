@@ -93,7 +93,8 @@ void setup()
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   
-  setupWander();
+  //setupWander();
+  setupRandomWalk();
 }
 
 
@@ -103,10 +104,9 @@ void loop()
   #ifdef DO_SWARM
   swarmDetector.loop();
   #endif
-  loopWander();
-  
+  loopRandom();
+  //loopWander();
   twoWheel.loop();
-  
   
 }
 
@@ -114,13 +114,14 @@ void buildPattern()
 {
    //buildOneSquare();
    //buildPoly( random( 45, 170 ) );
-   buildCurvahedron( random( 45, 170 ) );
-   
+   //buildCurvahedron( random( 45, 170 ) );
+   //buildRandom();
   //buildStraightLine(); // use this for exploring behaviour
   // buildName();
   //buildSquares();
  
 }
+
 
 void buildPoly(int angle)
 {
@@ -143,7 +144,7 @@ void buildCurvahedron(int angle)
 
 void buildOneSquare()
 {
-  int squareSide = 120;
+  int squareSide = 40;
   
   move( squareSide );
   turnLeft( 90 );
