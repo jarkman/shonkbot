@@ -364,7 +364,7 @@ const PROGMEM char dot_quote_str[] = ".\x22";
 // Run-Time ( -- )
 // Display ccc. 
 static void _dot_quote(void) {
-  uint8_t i;
+  //uint8_t i;
   char length;
   if (flags & EXECUTE) {
     Serial.print((char*)ip);
@@ -392,7 +392,7 @@ static void _dot_quote(void) {
     for (uint8_t i = 0; i < length; i++) {
       *(char*)pHere++ = cTokenBuffer[i];
     }
-    *(char*)pHere++ = NULL;    // Terminate String
+    *(char*)pHere++ = '\0';    // Terminate String
 #ifdef DEBUG
     serial_print_P(PSTR(": "));
     Serial.print(str);
@@ -574,7 +574,7 @@ const PROGMEM char lt_number_sign_str[] = "<#";
 // Initialize the pictured numeric output conversion process.
 static void _lt_number_sign(void) { 
   pPNO = (char*)pHere + HOLD_SIZE + 1;
-  *pPNO = NULL;
+  *pPNO = '\0';
 #ifdef DEBUG
   Serial.print("pPNO = $");
   Serial.println((addr_t)pPNO, HEX);
@@ -1150,7 +1150,7 @@ static void _find(void) {
 
   char* ptr = (char*)pop();
   uint8_t length = *ptr++;
-  if (length = 0) {
+  if (length == 0) {
     push(-16);
     _throw();
     return;
@@ -1511,7 +1511,7 @@ const PROGMEM char repeat_str[] = "repeat";
 // Run-Time ( -- )
 // Continue execution at the location given.
 static void _repeat(void) { 
-  cell_t dest;
+  //cell_t dest;
   cell_t* orig;
   *(cell_t*)pHere = JUMP_IDX;
 #ifdef DEBUG
@@ -1559,7 +1559,7 @@ const PROGMEM char s_quote_str[] = "s\x22";
 // Return c-addr and u describing a string consisting of the characters ccc. A program
 // shall not alter the returned string.
 static void _s_quote(void) {
-  uint8_t i;
+  //uint8_t i;
   char length;
   if (flags & EXECUTE) {
     push((cell_t)ip);
@@ -1588,7 +1588,7 @@ static void _s_quote(void) {
     for (uint8_t i = 0; i < length; i++) {
       *(char*)pHere++ = cTokenBuffer[i];
     }
-    *(char*)pHere++ = NULL;    // Terminate String
+    *(char*)pHere++ = '\0';    // Terminate String
 #ifdef DEBUG
     serial_print_P(PSTR(": "));
     Serial.print(str);
@@ -1986,7 +1986,7 @@ static void _throw(void) {
 #ifdef TOOLS_SET
 const PROGMEM char dot_s_str[] = ".s";
 static void _dot_s(void) {
-  char i;
+  uint8_t i;
   char depth = tos + 1;
   if (tos >= 0) {
     for (i = 0; i < depth ; i++) {
@@ -2086,8 +2086,8 @@ const PROGMEM char words_str[] = "words";
 static void _words(void) { // --
   uint8_t count = 0;
   uint8_t index = 0;
-  uint8_t length = 0;
-  char* pChar;
+  //uint8_t length = 0;
+  //char* pChar;
   
   while (pgm_read_word(&(flashDict[index].name))) {
       if (count > 70) {

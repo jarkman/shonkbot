@@ -1,3 +1,5 @@
+#ifndef yaffacore_h
+#define yaffacore_h
 /******************************************************************************/
 /**  YAFFA - Yet Another Forth for Arduino                                   **/
 /**                                                                          **/
@@ -47,10 +49,10 @@
 #define FLOORED       TRUE      // Floored Division is default
 #define ADDRESS_BITS  16        // Size of one address unit, in bits
 #define MAX_CHAR      0x7E      // Max. value of any character
-#define MAX_D         2^31-1    // Largest usable signed double number
-#define MAX_N         2^15-1    // largest usable signed integer
-#define MAX_U         2^16-1    // largest usable unsigned integer
-#define MAX_UD        2^32-1    // Largest usable unsigned double number
+#define MAX_D         (2^31)-1    // Largest usable signed double number
+#define MAX_N         (2^15)-1    // largest usable signed integer
+#define MAX_U         (2^16)-1    // largest usable unsigned integer
+#define MAX_UD        (2^32)-1    // Largest usable unsigned double number
 #define RSTACK_SIZE   16        // Max. size of the return stack, in cells
 #define STACK_SIZE    16        // Max. size of the data stack, in cells
 
@@ -143,3 +145,4 @@ extern const PROGMEM flashEntry_t flashDict[];        // forward reference
 /*****************************************************************************/
 //uint8_t serial_print_P(const char* ptr);  //prototype of function in Forth.c
 
+#endif // include guard

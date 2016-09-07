@@ -78,8 +78,7 @@
 
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
-#include "YAFFA.h"
-#include "Error_Codes.h"
+#include "yaffaerrors.h"
 
 /******************************************************************************/
 /** Uncomment for debug output                                               **/
@@ -327,7 +326,7 @@ uint8_t getToken(void) {
   uint8_t tokenIdx = 0;
   while(cpToIn <= cpSourceEnd) {
     if ((*cpToIn == cDelimiter) || (*cpToIn == 0)) {
-      cTokenBuffer[tokenIdx] = NULL;       // Terminate SubString
+      cTokenBuffer[tokenIdx] = '\0';       // Terminate SubString
       cpToIn++;
       if (tokenIdx) return tokenIdx;
     } else {
@@ -473,14 +472,14 @@ void executeWord(void) {
 /******************************************************************************/
 uint8_t isWord(char* addr) {
   uint8_t index = 0;
-  uint8_t length = 0;
+  //uint8_t length = 0;
   
   pUserEntry = pLastUserEntry;
   // First search through the user dictionary
   while(pUserEntry) {
     if (strcmp(pUserEntry->name, addr) == 0) {
       wordFlags = pUserEntry->flags;
-      length = strlen(pUserEntry->name);
+      //length = strlen(pUserEntry->name);
       w = (cell_t)pUserEntry->cfa;
       return(1);
     }
@@ -578,8 +577,8 @@ void openEntry(void) {
   pHere = (uint8_t*)pNewUserEntry->name;
   do {
     *pHere++ = cTokenBuffer[index++];
-  } while (cTokenBuffer[index] != NULL);
-  *pHere++ = NULL;
+  } while (cTokenBuffer[index] != '\0');
+  *pHere++ = '\0';
   ALIGN_P(pHere);
   pNewUserEntry->cfa = (addr_t)pHere;
   pCodeStart = (cell_t*)pHere;
@@ -753,8 +752,8 @@ uint8_t f_strcpy(char* addr1, char* addr2) {
 /** Functions for decompiling words                                          **/
 /******************************************************************************/
 char* xtToName(cell_t xt) {
-  uint8_t index = 0;
-  uint8_t length = 0;
+  //uint8_t index = 0;
+  //uint8_t length = 0;
   
   pUserEntry = pLastUserEntry;
 
