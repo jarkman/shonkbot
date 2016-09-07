@@ -223,10 +223,8 @@ void ysetup(void) {
 /******************************************************************************/
 void yloop(void) {
   boolean sawEOL = false;
-  boolean sawAnything = false;
   
   while (Serial.available() && cpNextWriteLoc < cpSource + BUFFER_SIZE - 1) {
-    sawAnything = true;
     char inChar = Serial.read();
     
     if (inChar == 8) {              // backspace
@@ -246,33 +244,32 @@ void yloop(void) {
       *cpNextWriteLoc = inChar;
       cpNextWriteLoc++;
       *cpNextWriteLoc = 0;
-    } else {
-      // Drop anything unrecognised.  That includes \r.
-      // Backpedal on having seen anything.
-      sawAnything = false;
     }
+    // Default of something unrecognised" is to just ignore the input.
+    // That includes \r.
   }
+
   if (sawEOL) {
-      cpSourceEnd = cpNextWriteLoc;
-      if (cpSourceEnd > cpSource) {
-        interpreter();
-        if (errorCode) errorCode = 0;
-        else {
-          if (!state) {
-            serial_print_P(ok_str);
-            char i = tos + 1;
-            while(i--) Serial.print(".");
-            Serial.println();
-          }
+    cpSourceEnd = cpNextWriteLoc;
+    if (cpSourceEnd > cpSource) {
+      interpreter();
+      if (errorCode) errorCode = 0;
+      else {
+        if (!state) {
+          serial_print_P(ok_str);
+          char i = tos + 1;
+          while(i--) Serial.print(".");
+          Serial.println();
         }
       }
-      if (state) serial_print_P(compile_prompt_str);
-      else serial_print_P(prompt_str);
+    }
+    if (state) serial_print_P(compile_prompt_str);
+    else serial_print_P(prompt_str);
 
-      cpSource = &cInputBuffer[0];
-      cpToIn = cpSource;
-      cpNextWriteLoc = cpSource;
-      *cpSource = '\0';
+    cpSource = &cInputBuffer[0];
+    cpToIn = cpSource;
+    cpNextWriteLoc = cpSource;
+    *cpSource = '\0';
   }
 }
 
