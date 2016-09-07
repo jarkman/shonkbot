@@ -2197,6 +2197,11 @@ static void _toName(void) {
 ////////////////////////////////////////
 // Housekeeping: debug, reset, modes. //
 ////////////////////////////////////////
+const PROGMEM char reset_str[] = "reset";
+static void _reset(void) {
+  asm volatile ("  jmp 0");
+}
+
 const PROGMEM char debug_str[] = "debug";
 static void _debug(void) {
   push((int)&debug);
@@ -2234,12 +2239,133 @@ static void _savebootstate(void) {
   serial_print_P(PSTR("saved\r\n"));
 }
 
+///////////////////////////////////////
+// Getters for dead reckoning state. //
+///////////////////////////////////////
+const PROGMEM char getx_str[] = "getx";
+static void _getx(void) {
+  push(int(twoWheel.getX()));
+}
+
+const PROGMEM char gety_str[] = "gety";
+static void _gety(void) {
+  push(int(twoWheel.getY()));
+}
+
+const PROGMEM char getheading_str[] = "getheading";
+static void _getheading(void) {
+  push(int(twoWheel.getHeading()));
+}
+
+const PROGMEM char getrange_str[] = "getrange";
+static void _getrange(void) {
+  push(collisionDetector.getRangeInCm());
+}
+
+/////////////////////////////////////
+// Immediate/interactive commands. //
+/////////////////////////////////////
+// Immediately turn (degrees; negative angle is anticlockwise).
+const PROGMEM char iturn_str[] = "iturn";
+static void _iturn(void) {
+  twoWheel.turn(int(pop()));
+}
+
+// Immediately move forward.  Negative is backwards.
+const PROGMEM char iforward_str[] = "iforward";
+static void _iforward(void) {
+  twoWheel.go(int(pop()));
+}
+
+const PROGMEM char ibeep_str[] = "ibeep";
+static void _ibeep(void) {
+  unsigned freq = pop();
+  unsigned duration = pop();
+  tone(PIEZO_PIN, freq, duration);
+}
+
+const PROGMEM char wait4_str[] = "wait4";
+static void _wait4(void) {
+  while (!twoWheel.arrived()) {
+    twoWheel.loop();
+  }
+}
+
 //////////////////////////////////
 // Queue/pattern-related stuff. //
 //////////////////////////////////
 const PROGMEM char loopq_str[] = "loopq";
 static void _loopq(void) {
   push((int)&loopPattern);
+}
+
+const PROGMEM char clearq_str[] = "clearq";
+static void _clearq(void) {
+  numMovements = 0;
+  nextMovement = 0;
+  doneTurn = false;
+  doneDistance = false;
+  // This is really only to make listq show a totally clear queue.
+  /*
+  for (int i=0; i < MAX_MOVEMENTS; i++) {
+    movements[i].turn = movements[i].distance = movements[i].curvature = 0;
+  }
+  */
+}
+
+// Print out the current pattern.
+const PROGMEM char listq_str[] = "listq";
+static void _listq(void) {
+  serial_print_P(PSTR("num="));
+  Serial.print(numMovements);
+  serial_print_P(PSTR(" next="));
+  Serial.print(nextMovement);
+  serial_print_P(PSTR("\r\n"));
+  for (int i=0; i < numMovements; i++) {
+    if (i==nextMovement) {
+      serial_print_P(PSTR("* "));
+    } else {
+      serial_print_P(PSTR("  "));
+    }
+    serial_print_P(PSTR("turn="));
+    Serial.print(movements[i].turn);
+    if (i==nextMovement && doneTurn) {
+      serial_print_P(PSTR("(done) "));
+    }
+
+    serial_print_P(PSTR(" dist="));
+    Serial.print(movements[i].distance);
+    if (i==nextMovement && doneDistance) {
+      serial_print_P(PSTR("(done) "));
+    }
+
+    serial_print_P(PSTR(" crv="));
+    Serial.print(movements[i].curvature);
+    serial_print_P(PSTR("\r\n"));
+
+    // The esp-link web console seems to drop chars if flooded, hinting at oversized packets, so the untested intention here is to force fewer smaller packets.
+    if (i == numMovements / 2) {
+      delay(100);
+    }
+  }
+}
+
+// Queue, but don't run, a new random curvahedron.  Just a comfy way to leave interactive mode.
+const PROGMEM char randomq_str[] = "randomq";
+static void _randomq(void) {
+  buildPattern();
+}
+
+// Queue a turn using Xpattern's abstraction (degrees; negative angle is anticlockwise).
+const PROGMEM char qturn_str[] = "qturn";
+static void _qturn(void) {
+  turnRight(pop());
+}
+
+// Queue a forward movement using Xpattern's abstraction.  There is no backwards.
+const PROGMEM char qforward_str[] = "qforward";
+static void _qforward(void) {
+  move(pop());
 }
 
 // Mostly just to allow for turning local echo back on (conveniently, ECHO is 0x1).
@@ -2451,13 +2577,30 @@ const PROGMEM flashEntry_t flashDict[] = {
 #endif
 
 // Shonk-specific ops.
+    { reset_str,           _reset,           NORMAL },
     { debug_str,           _debug,           NORMAL },
     { wanderstate_str,     _wanderstate,     NORMAL },
     { queuemode_str,       _queuemode,       NORMAL },
     { interactivemode_str, _interactivemode, NORMAL },
     { savebootstate_str,   _savebootstate,   NORMAL },
     
+    { getx_str,       _getx,       NORMAL },
+    { gety_str,       _gety,       NORMAL },
+    { getheading_str, _getheading, NORMAL },
+    { getrange_str,   _getrange,   NORMAL },
+
+    { iturn_str,      _iturn,      NORMAL },
+    { iforward_str,   _iforward,   NORMAL },
+    { ibeep_str,      _ibeep,      NORMAL },
+    { wait4_str,      _wait4,      NORMAL },
+
     { loopq_str,      _loopq,      NORMAL },
+    { clearq_str,     _clearq,     NORMAL },
+    { randomq_str,    _randomq,    NORMAL },
+    { listq_str,      _listq,      NORMAL },
+    { qturn_str,      _qturn,      NORMAL },
+    { qforward_str,   _qforward,   NORMAL },
+
 // The subset of Arduino ops we do want.
     { delay_str,          _delay,           NORMAL },
     { freeMem_str,        _freeMem,         NORMAL },
