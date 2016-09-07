@@ -694,14 +694,6 @@ uint8_t serial_print_P(PGM_P ptr) {
   return (79 - i);
 }
 
-// String Compare, Both strings in RAM
-uint8_t f_strcmp(char* addr1, char* addr2) {
-}
-
-// String Copy, Both strings in RAM
-uint8_t f_strcpy(char* addr1, char* addr2) {
-}
-
 /******************************************************************************/
 /** Functions for decompiling words                                          **/
 /******************************************************************************/

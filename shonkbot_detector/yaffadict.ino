@@ -726,15 +726,6 @@ static void _abs(void) {
   push(n < 0 ? 0 - n : n);
 }
 
-const PROGMEM char accept_str[] = "accept";
-// ( c-addr +n1 -- +n2 )
-static void _accept(void) {
-  cell_t length = pop(); 
-  char* addr = (char*)pop();
-  length = getLine(addr, length);
-  push(length);
-}
-
 const PROGMEM char align_str[] = "align";
 // ( -- )
 // if the data-space pointer is not aligned, reserve enough space to align it.
@@ -1268,12 +1259,6 @@ const PROGMEM char j_str[] = "j";
 // unavailable.
 static void _j(void) {
   push(rStack[rtos - 4]); 
-}
-
-const PROGMEM char key_str[] = "key";
-// ( -- char )
-static void _key(void) {
-  push(getKey());
 }
 
 const PROGMEM char leave_str[] = "leave";
@@ -2276,7 +2261,7 @@ const PROGMEM flashEntry_t flashDict[] = {
     { fetch_str,          _fetch,           NORMAL },
     { abort_quote_str,    _abort_quote,     IMMEDIATE + COMP_ONLY },
     { abs_str,            _abs,             NORMAL },
-    { accept_str,         _accept,          NORMAL },
+    //{ accept_str,         _accept,          NORMAL },
     { align_str,          _align,           NORMAL },
     { aligned_str,        _aligned,         NORMAL },
     { allot_str,          _allot,           NORMAL },
@@ -2316,7 +2301,7 @@ const PROGMEM flashEntry_t flashDict[] = {
     { immediate_str,      _immediate,       NORMAL },
     { invert_str,         _invert,          NORMAL },
     { j_str,              _j,               NORMAL },
-    { key_str,            _key,             NORMAL },
+    //{ key_str,            _key,             NORMAL },
     { leave_str,          _leave,           IMMEDIATE + COMP_ONLY },
     { loop_str,           _loop,            IMMEDIATE + COMP_ONLY },
     { lshift_str,         _lshift,          NORMAL },
