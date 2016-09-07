@@ -13,14 +13,11 @@ http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
 */
 
 
+#include <EEPROM.h>
 #include <AccelStepper.h>
 #include "IRDetector.h"
 #include "TwoWheel.h"
 #include "yaffacore.h"
-
-
-#define  DO_LOGGING
-
 
 
 // Arduino pins wired to stepper drivers - driver board labels pins as IN1, IN2 etc
@@ -78,6 +75,10 @@ uint16_t debug = 0;
 
 void setup()
 {  
+  if (EEPROM.read(EEPROM_MAGIC_LOC) == EEPROM_MAGIC_EXPECTED) {
+    debug = EEPROM.read(EEPROM_DEBUG_LOC);
+  }
+
   Serial.begin(38400);
   if (debug) {
     Serial.print(F("setup\n"));

@@ -206,6 +206,12 @@ void ysetup(void) {
 
   serial_print_P(prompt_str);
 
+  if (EEPROM.read(EEPROM_MAGIC_LOC) == EEPROM_MAGIC_EXPECTED) {
+    wanderState = EEPROM.read(EEPROM_WANDERSTATE_LOC);
+    loopPattern = EEPROM.read(EEPROM_LOOPPATTERN_LOC);
+    debug = EEPROM.read(EEPROM_DEBUG_LOC);
+  }
+
   // Copied from loop().
   cpSource = &cInputBuffer[0];
   cpToIn = cpSource;

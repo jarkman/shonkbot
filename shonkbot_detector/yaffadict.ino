@@ -2190,6 +2190,42 @@ static void _toName(void) {
 }
 #endif
 
+/********************************************************************************/
+/**                      Shonky Operations                                     **/
+/********************************************************************************/
+
+////////////////////////////////////////
+// Housekeeping: debug, reset, modes. //
+////////////////////////////////////////
+const PROGMEM char debug_str[] = "debug";
+static void _debug(void) {
+  push((int)&debug);
+}
+
+// Mostly for debug, to force a mode.  Not going to bother adding constants for the states.
+const PROGMEM char wanderstate_str[] = "wanderstate";
+static void _wanderstate(void) {
+  push((int)&wanderState);
+}
+
+const PROGMEM char savebootstate_str[] = "savebootstate";
+static void _savebootstate(void) {
+  // Gets loaded by ysetup().
+  EEPROM.write(EEPROM_MAGIC_LOC, EEPROM_MAGIC_EXPECTED);
+  EEPROM.write(EEPROM_WANDERSTATE_LOC, wanderState);
+  EEPROM.write(EEPROM_LOOPPATTERN_LOC, loopPattern);
+  EEPROM.write(EEPROM_DEBUG_LOC, debug);
+  serial_print_P(PSTR("saved\r\n"));
+}
+
+//////////////////////////////////
+// Queue/pattern-related stuff. //
+//////////////////////////////////
+const PROGMEM char loopq_str[] = "loopq";
+static void _loopq(void) {
+  push((int)&loopPattern);
+}
+
 /*********************************************************************************/
 /**                         Dictionary Initialization                           **/
 /*********************************************************************************/
@@ -2391,10 +2427,18 @@ const PROGMEM flashEntry_t flashDict[] = {
     { eeWrite_str,    _eeprom_write,    NORMAL },
 #endif
 
+// Shonk-specific ops.
+    { debug_str,           _debug,           NORMAL },
+    { wanderstate_str,     _wanderstate,     NORMAL },
+    { savebootstate_str,   _savebootstate,   NORMAL },
+    
+    { loopq_str,      _loopq,      NORMAL },
 // The subset of Arduino ops we do want.
     { delay_str,          _delay,           NORMAL },
     { freeMem_str,        _freeMem,         NORMAL },
 
+// Miscellany.
+    { flags_str,      _flags,  NORMAL },
     { NULL,           NULL,    NORMAL }
 };
 

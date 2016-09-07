@@ -60,6 +60,12 @@
 #define TOKEN_SIZE    32        // Definitions names shall contain 1 to 31 char.
 #define FORTH_SIZE   600      // Size of Forth Space in bytes
 
+#define EEPROM_MAGIC_LOC       0        // Lives in first byte.
+#define EEPROM_MAGIC_EXPECTED  42  // Consider EEPROM settings valid if first byte is this.
+#define EEPROM_LOOPPATTERN_LOC 1
+#define EEPROM_WANDERSTATE_LOC 2
+#define EEPROM_DEBUG_LOC       3
+
 /******************************************************************************/
 /**  Forth True and False                                                    **/
 /******************************************************************************/
