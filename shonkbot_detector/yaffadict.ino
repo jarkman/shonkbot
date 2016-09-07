@@ -2208,6 +2208,22 @@ static void _wanderstate(void) {
   push((int)&wanderState);
 }
 
+const PROGMEM char queuemode_str[] = "queuemode";
+static void _queuemode(void) {
+  if (numMovements == 0) {
+    serial_print_P(PSTR("Can't, movement queue is empty.\r\n"));
+  } else {
+    wanderState = STATE_CRUISING;
+  }
+}
+
+const PROGMEM char interactivemode_str[] = "interactivemode";
+static void _interactivemode(void) {
+  doneTurn = false;
+  doneDistance = false;
+  wanderState = STATE_CONSOLE_DRIVEN;
+}
+
 const PROGMEM char savebootstate_str[] = "savebootstate";
 static void _savebootstate(void) {
   // Gets loaded by ysetup().
@@ -2225,6 +2241,13 @@ const PROGMEM char loopq_str[] = "loopq";
 static void _loopq(void) {
   push((int)&loopPattern);
 }
+
+// Mostly just to allow for turning local echo back on (conveniently, ECHO is 0x1).
+const PROGMEM char flags_str[] = "flags";
+static void _flags(void) {
+  push((cell_t)&flags);
+}
+
 
 /*********************************************************************************/
 /**                         Dictionary Initialization                           **/
@@ -2430,6 +2453,8 @@ const PROGMEM flashEntry_t flashDict[] = {
 // Shonk-specific ops.
     { debug_str,           _debug,           NORMAL },
     { wanderstate_str,     _wanderstate,     NORMAL },
+    { queuemode_str,       _queuemode,       NORMAL },
+    { interactivemode_str, _interactivemode, NORMAL },
     { savebootstate_str,   _savebootstate,   NORMAL },
     
     { loopq_str,      _loopq,      NORMAL },

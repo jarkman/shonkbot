@@ -7,6 +7,7 @@
 #define STATE_TURNING 3
 #define STATE_LOOK_FOR_DARK 4
 #define STATE_TURNING_TO_DARK 5
+#define STATE_CONSOLE_DRIVEN 6  // Set by Forth console to disable wandering
 
 //#define DO_WANDER_LOGGING
 
