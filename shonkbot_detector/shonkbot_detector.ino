@@ -16,6 +16,7 @@ http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
 #include <AccelStepper.h>
 #include "IRDetector.h"
 #include "TwoWheel.h"
+#include "yaffacore.h"
 
 
 #define  DO_LOGGING
@@ -94,8 +95,9 @@ void setup()
   leftStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
-  
+
   setupWander();
+  ysetup();
 }
 
 
@@ -108,8 +110,7 @@ void loop()
   loopWander();
   
   twoWheel.loop();
-  
-  
+  yloop();
 }
 
 void buildPattern()
