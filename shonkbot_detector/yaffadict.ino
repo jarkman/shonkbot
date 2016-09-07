@@ -2368,6 +2368,52 @@ static void _qforward(void) {
   move(pop());
 }
 
+// Implement Libby's RESTful interface.  This Forth doesn't (yet) have PARSE/PARSE-NAME, and
+// the novelty of doing it in Forth would quickly wear off.  Nonetheless, this C version is a hack; Forth doesn't easily impersonate a web server.
+const PROGMEM char GET_str[] = "GET";
+static void _GET(void) {
+  boolean validCommand = true;
+
+  // Implies (going into) interactive mode.
+  _interactivemode();
+
+  // Throw away the rest of the request (lines after first).
+  while (Serial.available()) {
+    Serial.read();
+  }
+
+  if (!strncmp_P(cpToIn, PSTR("/servo/"), strlen_P(PSTR("/servo/")))) {
+    cpToIn += strlen_P(PSTR("/servo/"));
+    twoWheel.enable(true); // In case previous was /stop.
+
+    if (!strncmp_P(cpToIn, PSTR("start"), strlen_P(PSTR("start")))) {
+      twoWheel.goForever();
+    } else if (!strncmp_P(cpToIn, PSTR("back"), strlen_P(PSTR("back")))) {
+      twoWheel.go(-1000);
+    } else if (!strncmp_P(cpToIn, PSTR("right"), strlen_P(PSTR("right")))) {
+      twoWheel.turnRightForever();
+    } else if (!strncmp_P(cpToIn, PSTR("left"), strlen_P(PSTR("left")))) {
+      twoWheel.turnLeftForever();
+    } else if (!strncmp_P(cpToIn, PSTR("stop"), strlen_P(PSTR("stop")))) {
+      twoWheel.enable(false);
+    } else {
+      validCommand = false;
+    }
+  }
+
+  if (validCommand) {
+    Serial.print(F("HTTP/1.1 200 OK"));
+  } else {
+    Serial.print(F("HTTP/1.1 404 Not Found"));
+  }
+  Serial.print(F("\r\nConnection: close\r\nContent-Length: 0\r\n\r\n"));
+
+  // Reset the input state, to discard the rest of the GET line.
+  cpSource = &cInputBuffer[0];
+  cpToIn = cpSource;
+  cpNextWriteLoc = cpSource;
+}
+
 // Mostly just to allow for turning local echo back on (conveniently, ECHO is 0x1).
 const PROGMEM char flags_str[] = "flags";
 static void _flags(void) {
@@ -2600,6 +2646,8 @@ const PROGMEM flashEntry_t flashDict[] = {
     { listq_str,      _listq,      NORMAL },
     { qturn_str,      _qturn,      NORMAL },
     { qforward_str,   _qforward,   NORMAL },
+
+    { GET_str,        _GET,        NORMAL },
 
 // The subset of Arduino ops we do want.
     { delay_str,          _delay,           NORMAL },
