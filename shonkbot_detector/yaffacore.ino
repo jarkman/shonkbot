@@ -108,6 +108,7 @@ char* cpSource;                 // Pointer to the string location that we will
 char* cpSourceEnd;              // Points to the end of the source string
 char* cpToIn;                   // Points to a position in the source string
                                 // that was the last character to be parsed
+char *cpNextWriteLoc;           // Where we'll write the next meaningful char
 char cDelimiter = ' ';          // The parsers delimiter
 char cInputBuffer[BUFFER_SIZE]; // Input Buffer that gets parsed
 char cTokenBuffer[TOKEN_SIZE];  // Stores Single Parsed token to be acted on
@@ -115,7 +116,7 @@ char cTokenBuffer[TOKEN_SIZE];  // Stores Single Parsed token to be acted on
 /******************************************************************************/
 /** Common Strings & Terminal Constants                                      **/
 /******************************************************************************/
-const char prompt_str[] PROGMEM = ">> ";
+const char prompt_str[] PROGMEM = "shonky>> ";
 const char compile_prompt_str[] PROGMEM = "|  ";
 const char ok_str[] PROGMEM = " OK";
 const char charset[] PROGMEM = "0123456789abcdef";
@@ -153,7 +154,7 @@ userEntry_t* pNewUserEntry = NULL;
 /******************************************************************************/
 /**  Flags - Internal State and Word                                         **/
 /******************************************************************************/
-uint8_t flags;                 // Internal Flags
+cell_t flags;                  // Internal Flags
 #define ECHO_ON        0x01    // Echo characters typed on the serial input
 #define NUM_PROC       0x02    // Pictured Numeric Process
 #define EXECUTE        0x04
@@ -187,51 +188,15 @@ cell_t base;  // stores the number conversion radix
 /******************************************************************************/
 /** Initialization                                                           **/
 /******************************************************************************/
-void setup(void) {                
+void ysetup(void) {
   uint16_t mem;
-  Serial.begin(19200);     // Open serial communications:
 
-  flags = ECHO_ON;
+  flags = 0; // Notably not ECHO_ON, because that breaks simulated RESTful GET.
   base = 10;
-  
-  serial_print_P(PSTR("\n YAFFA - Yet Another Forth For Arduino, "));
-  serial_print_P(PSTR("Version "));
-  Serial.print(YAFFA_MAJOR,DEC);
-  serial_print_P(PSTR("."));
-  Serial.println(YAFFA_MINOR,DEC);
-  serial_print_P(PSTR(" Copyright (C) 2012 Stuart Wood\r\n"));
-  serial_print_P(PSTR(" This program comes with ABSOLUTELY NO WARRANTY.\r\n"));
-  serial_print_P(PSTR(" This is free software, and you are welcome to\r\n"));
-  serial_print_P(PSTR(" redistribute it under certain conditions.\r\n"));
-  serial_print_P(PSTR("\r\n Terminal Echo is "));
-  if (flags & ECHO_ON) serial_print_P(PSTR("On\r\n"));
-  else serial_print_P(PSTR("Off\r\n"));
-  serial_print_P(PSTR(" Pre-Defined Words : "));
-  pFlashEntry = flashDict;
-  w = 0;
-  while(pgm_read_word(&(pFlashEntry->name))) {
-    w++;
-    pFlashEntry++;
-  }
-  Serial.println(w);
-
-  serial_print_P(PSTR(" Input Buffer: Starts at $"));
-  Serial.print((int)&cInputBuffer[0], HEX);
-  serial_print_P(PSTR(", Ends at $"));
-  Serial.println((int)&cInputBuffer[BUFFER_SIZE] - 1, HEX);
-
-  serial_print_P(PSTR(" Token Buffer: Starts at $"));
-  Serial.print((int)&cTokenBuffer[0], HEX);
-  serial_print_P(PSTR(", Ends at $"));
-  Serial.println((int)&cTokenBuffer[TOKEN_SIZE] - 1, HEX);
-
   pHere = &forthSpace[0];
   pOldHere = pHere;
-  serial_print_P(PSTR(" Forth Space: Starts at $"));
-  Serial.print((int)&forthSpace[0], HEX);
-  serial_print_P(PSTR(", Ends at $"));
-  Serial.println((int)&forthSpace[FORTH_SIZE] - 1, HEX);
 
+  serial_print_P(PSTR("\r\nShonky console based on YAFFA (C) 2012 Stuart Wood.\r\n"));
   mem = freeMem();
   serial_print_P(sp_str);
   Serial.print(mem);
@@ -240,82 +205,71 @@ void setup(void) {
   serial_print_P(PSTR(") bytes free\r\n"));
 
   serial_print_P(prompt_str);
+
+  // Copied from loop().
+  cpSource = &cInputBuffer[0];
+  cpToIn = cpSource;
+  cpNextWriteLoc = cpSource;
 }
 
 /******************************************************************************/
 /** Outer interpreter                                                        **/
 /******************************************************************************/
-void loop(void) {
-  cpSource = &cInputBuffer[0];
-  cpToIn = cpSource;
-  cpSourceEnd = cpSource + getLine(cpSource, BUFFER_SIZE);
-  if (cpSourceEnd > cpSource) {
-    interpreter();
-    if (errorCode) errorCode = 0;
-    else {
-      if (!state) {
-        serial_print_P(ok_str);
-        char i = tos + 1;
-        while(i--) Serial.print(".");
-        Serial.println();
-      }
-    }
-  }
-  if (state) serial_print_P(compile_prompt_str);
-  else serial_print_P(prompt_str);
-}
-
-/******************************************************************************/
-/** getKey                                                                   **/
-/**   waits for the next valid key to be entered and return its value        **/
-/**   Valid characters are:  Backspace, Carriage Return, Escape, Tab, and    **/
-/**   standard printable characters                                          **/
-/******************************************************************************/
-char getKey(void) {
-  char inChar;
+void yloop(void) {
+  boolean sawEOL = false;
+  boolean sawAnything = false;
   
-  while(1) {
-    if (Serial.available()) {
-      inChar = Serial.read();
-      if (inChar == 8 || inChar == 9 || inChar == 13 || 
-          inChar == 27 || isprint(inChar)) {
-        return inChar; 
-      }
-    }
-  }
-}
-  
-/******************************************************************************/
-/** getLine                                                                  **/
-/**   read in a line of text ended by a Carriage Return (ASCII 13)           **/
-/**   Valid characters are:  Backspace, Carriage Return, Escape, Tab, and    **/
-/**   standard printable characters. Passed the address to store the string, **/
-/**   and Returns the length of the string stored                            **/
-/******************************************************************************/
-uint8_t getLine(char* addr, uint8_t length) {
-  char inChar;
-  char* start = addr;
-  do {
-    inChar = getKey();
-    if(inChar == 8) {              // backspace
-      if (addr > start) {
-        *--addr = 0;
+  while (Serial.available() && cpNextWriteLoc < cpSource + BUFFER_SIZE - 1) {
+    sawAnything = true;
+    char inChar = Serial.read();
+    
+    if (inChar == 8) {              // backspace
+      if (cpNextWriteLoc > cpSource) {
+        cpNextWriteLoc--;
+        *cpNextWriteLoc = 0;
         if (flags & ECHO_ON) serial_print_P(PSTR("\b \b"));
       }
     } else if (inChar == 9 || inChar == 27) { // TAB or ECS
       if (flags & ECHO_ON) Serial.print("\a");         // Beep
-    } else if(inChar == 13) {     // Carriage return
+    } else if (inChar == 10) {     // New line
       if (flags & ECHO_ON) Serial.println();
+      sawEOL = true;
       break;
-    } else {
+    } else if (isprint(inChar)) {
       if (flags & ECHO_ON) Serial.print(inChar);
-      *addr++ = inChar;
-      *addr = 0;
+      *cpNextWriteLoc = inChar;
+      cpNextWriteLoc++;
+      *cpNextWriteLoc = 0;
+    } else {
+      // Drop anything unrecognised.  That includes \r.
+      // Backpedal on having seen anything.
+      sawAnything = false;
     }
-  } while(addr < start + length);
-  return((uint8_t)(addr - start));
+  }
+  if (sawEOL) {
+      cpSourceEnd = cpNextWriteLoc;
+      if (cpSourceEnd > cpSource) {
+        interpreter();
+        if (errorCode) errorCode = 0;
+        else {
+          if (!state) {
+            serial_print_P(ok_str);
+            char i = tos + 1;
+            while(i--) Serial.print(".");
+            Serial.println();
+          }
+        }
+      }
+      if (state) serial_print_P(compile_prompt_str);
+      else serial_print_P(prompt_str);
+
+      cpSource = &cInputBuffer[0];
+      cpToIn = cpSource;
+      cpNextWriteLoc = cpSource;
+      *cpSource = '\0';
+  }
 }
-  
+
 /******************************************************************************/
 /** GetToken                                                                 **/
 /**   Find the next token in the buffer and stores it into the token buffer  **/

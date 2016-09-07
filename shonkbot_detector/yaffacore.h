@@ -58,7 +58,7 @@
 
 #define BUFFER_SIZE   96        // Min. size is 80 characters for ANS Forth
 #define TOKEN_SIZE    32        // Definitions names shall contain 1 to 31 char.
-#define FORTH_SIZE   1280      // Size of Forth Space in bytes
+#define FORTH_SIZE   600      // Size of Forth Space in bytes
 
 /******************************************************************************/
 /**  Forth True and False                                                    **/
