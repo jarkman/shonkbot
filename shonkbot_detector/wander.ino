@@ -10,7 +10,8 @@
 
 //#define DO_WANDER_LOGGING
 
-int state = STATE_SELFTEST;
+// It's helpful if the size matches a YAFFA cell, hence the uint16_t.
+uint16_t wanderState = STATE_SELFTEST;
 int selftestPhase = 0;
 
 int turningLeft = 0;
@@ -26,7 +27,7 @@ int brightnessAtDarkestHeading;
 
 void setupWander()
 {
-  state = STATE_SELFTEST;
+  wanderState = STATE_SELFTEST;
   selftestPhase = 0;
   buildPattern();
 }
@@ -63,7 +64,7 @@ void loopWander()
   
   seeNewShonkbot = false; // this line turns off all attempts at swarming
   
-  switch( state )
+  switch( wanderState )
   {
     case STATE_SELFTEST:
       doSelftest();
@@ -201,35 +202,35 @@ void reversingBeep()
 
 void startCruising()
 {
-  #ifdef DO_WANDER_LOGGING
-   Serial.println( "*****************************************************************************************************" );
-   Serial.println( "startCruising " );
-#endif
+  if (debug) {
+    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(F("startCruising "));
+  }
 
-  state = STATE_CRUISING;
+  wanderState = STATE_CRUISING;
   doNextMovement();
   //twoWheel.goForever();
 }
 
 void startBacking()
 {
-#ifdef DO_WANDER_LOGGING
-  Serial.println( "*****************************************************************************************************" );
-   Serial.println( "startBacking " );
-#endif
+  if (debug) {
+    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(F("startBacking "));
+  }
 
-  state = STATE_BACKING;
+  wanderState = STATE_BACKING;
   twoWheel.go( -25.0 ); // go back a bit to get away from the obstacle
 }
 
 void startTurning()
 {
-#ifdef DO_WANDER_LOGGING
-  Serial.println( "*****************************************************************************************************" );
-   Serial.println( "startTurning " );
-#endif
+  if (debug) {
+    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(F("startTurning "));
+  }
 
-  state = STATE_TURNING;  
+  wanderState = STATE_TURNING;
   turningLeft = random( 0, 2 ); // 0 or 1
   
   keepTurning();
@@ -238,10 +239,10 @@ void startTurning()
 
 void keepTurning()
 {
-#ifdef DO_WANDER_LOGGING
-  Serial.println( "*****************************************************************************************************" );
-   Serial.println( "keepTurning " );
-#endif
+  if (debug) {
+    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(F("keepTurning "));
+  }
 
   // Called at the start of a turn and when we find we still have an obstacle during a turn
   int angle = random(10, 90);
@@ -253,12 +254,12 @@ void keepTurning()
 
 void startLookingForDark()
 {
-#ifdef DO_WANDER_LOGGING
-  Serial.println( "*****************************************************************************************************" );
-   Serial.println( "startLookForDark " );
-#endif
+  if (debug) {
+    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(F("startLookForDark "));
+  }
 
-  state = STATE_LOOK_FOR_DARK;
+  wanderState = STATE_LOOK_FOR_DARK;
   
   darkestHeading = twoWheel.getHeading()+180;
   brightnessAtDarkestHeading = 1024; // very bright
@@ -287,32 +288,31 @@ void keepLookingForDark(int range)
      brightnessAtDarkestHeading = brightness;
      darkestHeading = twoWheel.getHeading();
      
-      #ifdef DO_WANDER_LOGGING
-     Serial.print( "keepLookingForDark new darkest is at " );
-     Serial.println(twoWheel.getHeading());
-     #endif
+     if (debug) {
+       Serial.print(F("keepLookingForDark new darkest is at "));
+       Serial.println(twoWheel.getHeading());
+     }
      
    }
   }
   else
   {
+    if (debug) {
+      int currentHeading = twoWheel.getHeading();
     
-    int currentHeading = twoWheel.getHeading();
-    
-    int turnDegrees = (darkestHeading - currentHeading) % 360;
-    
-    #ifdef DO_WANDER_LOGGING
-    Serial.println( "*****************************************************************************************************" );
-    Serial.print( "keepLookingForDark done, turning from " );
-    Serial.print(currentHeading);
-    Serial.print( " to ");
-    Serial.print(darkestHeading);
-    Serial.print( " so turning by " );
-    Serial.println( turnDegrees );
-    #endif
+      int turnDegrees = (darkestHeading - currentHeading) % 360;
+
+      Serial.println(F("*****************************************************************************************************"));
+      Serial.print(F("keepLookingForDark done, turning from "));
+      Serial.print(currentHeading);
+      Serial.print(F(" to "));
+      Serial.print(darkestHeading);
+      Serial.print(F(" so turning by "));
+      Serial.println( turnDegrees );
+    }
 
     // have completed scan, so turn to the darkest direction then start cruising
-    state = STATE_TURNING_TO_DARK;
+    wanderState = STATE_TURNING_TO_DARK;
     
     twoWheel.turnToHeading( darkestHeading );  
   }

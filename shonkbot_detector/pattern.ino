@@ -15,7 +15,8 @@ int nextMovement = 0;
 boolean doneTurn = false;
 boolean doneDistance = false;
 int numMovements = 0;
-
+// It's helpful if the size matches a YAFFA cell, hence the uint16_t.
+uint16_t loopPattern = 1;
 
 
 void doFirstMovement()
@@ -38,7 +39,7 @@ void doNextMovement()
   
   if( nextMovement >= numMovements )
   {
-    if( true )
+    if( loopPattern )
     {
       // loop
       nextMovement = 0;

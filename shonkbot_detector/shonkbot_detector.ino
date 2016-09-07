@@ -71,15 +71,17 @@ IRDetector swarmDetector(SWARM_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, -1, SWARM
 
 TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING, MAX_SPEED );
 
+// Can be switched via YAFFA console while running.
+// Boolean, but it's simpler if the size matches a YAFFA cell_t.
+uint16_t debug = 0;
 
 void setup()
 {  
-  #ifdef DO_LOGGING
-  Serial.begin (57600); // for debugging
+  Serial.begin(38400);
+  if (debug) {
+    Serial.print(F("setup\n"));
+  }
 
-  Serial.print ("setup\n");
-  #endif
-  
   randomSeed(analogRead(COLLISION_PHOTOTRANSISTOR_PIN));  // use ambient IR as a source of randomness
   
   collisionDetector.setup();

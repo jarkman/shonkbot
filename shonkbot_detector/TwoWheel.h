@@ -68,7 +68,8 @@ class TwoWheel
   float stepsForTurn( float degrees ); //  clockwise
   
   float getHeading();
-
+  float getX() { return xPos; }
+  float getY() { return yPos; }
   
   
   
