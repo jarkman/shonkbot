@@ -200,10 +200,13 @@ void reversingBeep()
       }
 }
 
+#define PGMT(pgm_ptr) (reinterpret_cast<const __FlashStringHelper *>(pgm_ptr))
+const char debugBanner[] PROGMEM = "*****************************************************************************************************";
+
 void startCruising()
 {
   if (debug) {
-    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(PGMT(debugBanner));
     Serial.println(F("startCruising "));
   }
 
@@ -215,7 +218,7 @@ void startCruising()
 void startBacking()
 {
   if (debug) {
-    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(PGMT(debugBanner));
     Serial.println(F("startBacking "));
   }
 
@@ -226,7 +229,7 @@ void startBacking()
 void startTurning()
 {
   if (debug) {
-    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(PGMT(debugBanner));
     Serial.println(F("startTurning "));
   }
 
@@ -240,7 +243,7 @@ void startTurning()
 void keepTurning()
 {
   if (debug) {
-    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(PGMT(debugBanner));
     Serial.println(F("keepTurning "));
   }
 
@@ -255,7 +258,7 @@ void keepTurning()
 void startLookingForDark()
 {
   if (debug) {
-    Serial.println(F("*****************************************************************************************************"));
+    Serial.println(PGMT(debugBanner));
     Serial.println(F("startLookForDark "));
   }
 
@@ -302,7 +305,7 @@ void keepLookingForDark(int range)
     
       int turnDegrees = (darkestHeading - currentHeading) % 360;
 
-      Serial.println(F("*****************************************************************************************************"));
+      Serial.println(PGMT(debugBanner));
       Serial.print(F("keepLookingForDark done, turning from "));
       Serial.print(currentHeading);
       Serial.print(F(" to "));
