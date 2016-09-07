@@ -34,8 +34,8 @@
 #define TOOLS_SET
 //#define SEARCH_SET
 //#define STRING_SET
-#define EN_ARDUINO_OPS
-#define EN_EEPROM_OPS
+//#define EN_ARDUINO_OPS
+//#define EN_EEPROM_OPS
 
 /******************************************************************************/
 /**  Environmental Constants and Name Strings                                **/

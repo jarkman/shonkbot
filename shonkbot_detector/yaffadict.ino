@@ -2139,7 +2139,6 @@ static void _eeprom_write(void) {             // value address --
 /********************************************************************************/
 /**                      Arduino Library Operations                            **/
 /********************************************************************************/
-#ifdef EN_ARDUINO_OPS
 const PROGMEM char freeMem_str[] = "freeMem";
 static void _freeMem(void) { 
   push(freeMem());
@@ -2149,6 +2148,8 @@ const PROGMEM char delay_str[] = "delay";
 static void _delay(void) {
   delay(pop());
 }
+
+#ifdef EN_ARDUINO_OPS
 
 const PROGMEM char pinWrite_str[] = "pinWrite";
 // ( u1 u2 -- )
@@ -2389,6 +2390,10 @@ const PROGMEM flashEntry_t flashDict[] = {
     { eeRead_str,     _eeprom_read,    NORMAL },
     { eeWrite_str,    _eeprom_write,    NORMAL },
 #endif
+
+// The subset of Arduino ops we do want.
+    { delay_str,          _delay,           NORMAL },
+    { freeMem_str,        _freeMem,         NORMAL },
 
     { NULL,           NULL,    NORMAL }
 };
