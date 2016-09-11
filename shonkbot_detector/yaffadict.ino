@@ -2284,8 +2284,8 @@ static void _ibeep(void) {
   tone(PIEZO_PIN, freq, duration);
 }
 
-const PROGMEM char wait4_str[] = "wait4";
-static void _wait4(void) {
+const PROGMEM char iwait_str[] = "iwait";
+static void _iwait(void) {
   while (!twoWheel.arrived()) {
     twoWheel.loop();
   }
@@ -2638,7 +2638,7 @@ const PROGMEM flashEntry_t flashDict[] = {
     { iturn_str,      _iturn,      NORMAL },
     { iforward_str,   _iforward,   NORMAL },
     { ibeep_str,      _ibeep,      NORMAL },
-    { wait4_str,      _wait4,      NORMAL },
+    { iwait_str,      _iwait,      NORMAL },
 
     { loopq_str,      _loopq,      NORMAL },
     { clearq_str,     _clearq,     NORMAL },
