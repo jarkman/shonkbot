@@ -140,7 +140,11 @@ void loopWander()
         startCruising();
       break;
     
-    
+    case STATE_CONSOLE_DRIVEN:
+      if (twoWheel.arrived()) {
+        twoWheel.enable(false);
+      }
+      break;
   }
   
   

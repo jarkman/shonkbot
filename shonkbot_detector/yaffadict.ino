@@ -2268,12 +2268,14 @@ static void _getrange(void) {
 // Immediately turn (degrees; negative angle is anticlockwise).
 const PROGMEM char iturn_str[] = "iturn";
 static void _iturn(void) {
+  twoWheel.enable(true);
   twoWheel.turn(int(pop()));
 }
 
 // Immediately move forward.  Negative is backwards.
 const PROGMEM char iforward_str[] = "iforward";
 static void _iforward(void) {
+  twoWheel.enable(true);
   twoWheel.go(int(pop()));
 }
 
