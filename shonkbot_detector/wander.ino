@@ -1,36 +1,48 @@
 
 // Wander - cruise about, turning when an object is detected ahead of us
 
+#define STATE_SELFTEST 3
 #define STATE_CRUISING 0
 #define STATE_BACKING 1
 #define STATE_TURNING 2
 
-//#define DO_WANDER_LOGGING
+#define DO_WANDER_LOGGING
 
-int state = STATE_CRUISING;
+int selftestPhase = 0;
+int state = STATE_SELFTEST;
 int turningLeft = 0;
-boolean reversingBeepOn;
 
 long clearSteps = -1;
-int reversingPiezoPin = PIEZO_PIN;
 
 void setupWander()
 {
-  startCruising();
+  state = STATE_SELFTEST;
+  selftestPhase = 0;
+  loopWander();
+//  startCruising();
 }
 
 
 void loopWander()
 {
 
- int range = collisionDetector.getRangeInCm();
-
+  int range = sonar.ping_cm();
+//  Serial.println(state);
+  //Serial.println(range);
+  //Serial.println();
   switch( state )
   {
+
+    case STATE_SELFTEST:
+      doSelftest();
+      break;
+      
     case STATE_CRUISING:
-      if( range != 0 )
+      if( range > 0 && range < MAX_DISTANCE )
       {
        // we see a thing! 
+       Serial.println("BACKING !!! ");
+       //Serial.println(range);
        startBacking();
       }
      
@@ -39,23 +51,24 @@ void loopWander()
    
    case STATE_BACKING:
    
-     reversingBeep();
         
     // did we back far enough ?    
     if( twoWheel.arrived() )
     {
        startTurning();
-       noTone(reversingPiezoPin); // finish any left-over reversing beep
     }
     break;
     
    case STATE_TURNING:
      if (range == 0)    // nothing there there
      {
-       if( twoWheel.arrived()) // turned enough
-         startCruising();      // stop turning
-       else
+       if( twoWheel.arrived()){ // turned enough
+         startCruising();
+         Serial.println("cruising");// stop turning
+       }
+       else{
          ; // do nothing, still turning to do  
+       }
      }
      else
      {
@@ -68,28 +81,36 @@ void loopWander()
   
 }
 
-void reversingBeep()
+void doSelftest()
 {
-  // reversing beeps
-  // beep for the first 0.5s of each 1.5s period
-      long t = millis() % 1000;
-      if( t < 200 && t > 0 )
-      {
-        //if( ! reversingBeepOn )
-        {
-          tone(reversingPiezoPin, 5000);
-          reversingBeepOn = true;
-        }
-      }
-      else
-      {
-        if( reversingBeepOn )
-        {
-          noTone(reversingPiezoPin);  
-          reversingBeepOn = false;
-        }
-      }
+  if( selftestPhase == 0 )
+  {
+    selftestPhase = 1;
+    twoWheel.turn( -10 );
+  }
+  else if( selftestPhase == 1 )
+  {
+    if( twoWheel.arrived() )
+    {
+      selftestPhase = 2;
+      twoWheel.turn( 20 );
+    }
+  }
+  else if( selftestPhase == 2 )
+  {
+    if( twoWheel.arrived() )
+    {
+      selftestPhase = 3;
+      twoWheel.turn( -10 );
+    }
+  }
+  else if( selftestPhase == 3 )
+  {
+    if( twoWheel.arrived() )
+      startCruising();
+  }
 }
+
 
 void startCruising()
 {

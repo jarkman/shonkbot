@@ -3,23 +3,23 @@
 
 Shonkbot with IR object detection and a bump-and-turn action for obstacle avoidance
 
-See 
-http://jarkman.co.uk/catalog/robots/shonkbot.htm for more details and 
-https://github.com/jarkman/shonkbot/tree/master/shonkbot_detector for the current source.
+See http://jarkman.co.uk/catalog/robots/shonkbot.htm for more details
 
-You'll need the AccelStepper library, get it from 
-http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
+-- 
+
+This is 25e5c44 (the newest one I could find that does wander ok, I think?) but with Newping instread of IR detection
+Newping doesn't work with tone :-(
+-- Libby
 
 */
 
+#include <NewPing.h>
 
 #include <AccelStepper.h>
-#include "IRDetector.h"
 #include "TwoWheel.h"
 
-
-#define  DO_LOGGING
-
+#define DO_LOGGING
+#define DEBUG
 
 
 // Arduino pins wired to stepper drivers - driver board labels pins as IN1, IN2 etc
@@ -33,6 +33,9 @@ http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
 #define RIGHT_IN3 8
 #define RIGHT_IN4 9
 
+#define TRIGGER_PIN  12
+#define ECHO_PIN     11
+#define MAX_DISTANCE 10
 
 // Define a stepper and the pins it will use
 // We use HALF4WIRE not FULL4WIRE because it results in lower overall current consumption (150mA per motor as opposed to 200mA)
@@ -40,14 +43,9 @@ AccelStepper leftStepper(AccelStepper::HALF4WIRE, LEFT_IN1,LEFT_IN3,LEFT_IN2,LEF
                                                                                                                       
 AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2,RIGHT_IN4); // note middle two pins are swapped!
 
-
-
-#define PIEZO_PIN 12                        // Wire a piezo sounder from pin 12 to ground
-#define COLLISION_LED_PIN 13                // Wire IR LED from pin 13 to ground
 #define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor from A0 to ground, with a 10k pullup
-#define COLLISION_FREQUENCY 75              // Use 75 hz for collision detection
 
-IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 // using 28BYj-48 motors from http://www.ebay.co.uk/itm/131410728499
 
@@ -55,17 +53,14 @@ IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, P
                               // see http://42bots.com/tutorials/28byj-48-stepper-motor-with-uln2003-driver-and-arduino-uno/ 
                               // and http://forum.arduino.cc/index.php?topic=71964.15
 
-#define MAX_SPEED 800 // 1000 is a sensible limit on 3 x 1.5v battery, it's probably as much as we cna expect to get from AccelStepper anyhow
-#define MAX_ACCELERATION 1000 // 1600 on 5v, 400 on 3v
+#define MAX_SPEED 1200 // 1000 is a sensible limit on 3 x 1.5v battery, it's probably as much as we cna expect to get from AccelStepper anyhow
+#define MAX_ACCELERATION 1600 // 1600 on 5v, 400 on 3v
 
 #define WHEEL_DIAMETER 40.0   // radius of your wheel in mm - 40.00 is right for a blue wheel with a rubber band on
-#define WHEEL_SPACING 150.0   // distance from one wheel to the other in mm
+#define WHEEL_SPACING 200.0   // distance from one wheel to the other in mm
 
 TwoWheel twoWheel( &leftStepper, &rightStepper, STEPS_PER_REV, WHEEL_DIAMETER, WHEEL_SPACING );
 
-// Set one of these flags to choose our task
-boolean doScript = false;
-boolean doWander = true;
 
 void setup()
 {  
@@ -75,7 +70,6 @@ void setup()
   Serial.print ("setup\n");
   #endif
   
-  collisionDetector.setup();
   twoWheel.setup();
 
   leftStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
@@ -83,26 +77,15 @@ void setup()
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   
-  
-  if( doScript )
-    setupScript();
-  else if( doWander )
-    setupWander();
+  setupWander();
 }
 
 
 void loop()
 {
-  collisionDetector.loop();
   
-  
-  if( doScript )
-    loopScript();  
-  else if( doWander )
-    loopWander();
-  
+  loopWander();
   twoWheel.loop();
-  
   
 }
 
