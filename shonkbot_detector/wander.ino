@@ -5,8 +5,6 @@
 #define STATE_CRUISING 1
 #define STATE_BACKING 2
 #define STATE_TURNING 3
-#define STATE_LOOK_FOR_DARK 4
-#define STATE_TURNING_TO_DARK 5
 
 //#define DO_WANDER_LOGGING
 
@@ -19,10 +17,6 @@ boolean reversingBeepOn;
 long clearSteps = -1;
 int reversingPiezoPin = PIEZO_PIN;
 
-//#define HIDE_IN_THE_DARK  // define this to make shonkbot look for a dark place 
-
-int darkestHeading;
-int brightnessAtDarkestHeading;
 
 void setupWander()
 {
@@ -31,37 +25,14 @@ void setupWander()
   buildPattern();
 }
 
-boolean sawShonkbot = false;
-boolean seeShonkbot = false;
 
 void loopWander()
 {
   boolean seeObject = false;
   int swarmRange = 0;
 
- int collisionRange = collisionDetector.getRangeInCm();
- seeObject = collisionRange != 0 && collisionRange < 20;
- 
-   #ifdef DO_SWARM
-    swarmRange = swarmDetector.getRangeInCm();
-    seeShonkbot = swarmRange != 0;
-  #else
-    seeShonkbot = false;
-  #endif
-  
-  
-  
-  if( seeObject && seeShonkbot )
-    if( collisionRange < swarmRange ) // if we see both, take the closest 
-      seeShonkbot = false;
-    else
-      seeObject = false;
-      
-  boolean seeNewShonkbot = seeShonkbot && ! sawShonkbot;
-  
-  sawShonkbot = seeShonkbot;
-  
-  seeNewShonkbot = false; // this line turns off all attempts at swarming
+  int collisionRange = collisionDetector.getRangeInCm();
+  seeObject = collisionRange != 0 && collisionRange < 20;
   
   switch( state )
   {
@@ -70,78 +41,50 @@ void loopWander()
       break;
         
     case STATE_CRUISING:
-      if( seeNewShonkbot )
-      {
-        doFirstMovement(); // start heading towards it
-      }
-      else if( seeObject )
+      if( seeObject )
       {
        // we see a thing! 
        startBacking();
       }
-      else
+      else 
       {
-        if (twoWheel.arrived())
+        if (twoWheel.arrived()){
           doNextMovement();
+        }
       }
-      
       break;
    
-   case STATE_BACKING:
-   
-     reversingBeep();
+    case STATE_BACKING:
+      reversingBeep();
         
-    // did we back far enough ?    
-    if( twoWheel.arrived() )
-    {
-       
-       noTone(reversingPiezoPin); // finish any left-over reversing beep
-       
-       #ifdef HIDE_IN_THE_DARK
-       
-         startLookingForDark();
-       
-       #else
-         
-         startTurning();
-       
-       #endif
-       
-       
-    }
-    break;
+      // did we back far enough ?    
+      if( twoWheel.arrived() )
+      {
+        noTone(reversingPiezoPin); // finish any left-over reversing beep
+        startTurning();
+      }
+      break;
     
    case STATE_TURNING:
-     if ( ! seeObject)    // nothing there 
-     {
-       if( seeNewShonkbot )
-      {
-        doFirstMovement(); // start heading towards it
-      }
-      else if( twoWheel.arrived()) // turned enough
-         startCruising();      // stop turning
+     if ( ! seeObject){    // nothing there 
+
+       if( twoWheel.arrived()){ // turned enough
+         startCruising();  
+         // stop turning
+       }
        else
+       {
          ; // do nothing, still turning to do  
+       }
      }
      else
      {
-       keepTurning(); // still an obstacle, so we want to keep turning
+        keepTurning(); // still an obstacle, so we want to keep turning
      }
      break;
-     
-    case STATE_LOOK_FOR_DARK:
-      keepLookingForDark(collisionRange);
-      break;
-      
-    case STATE_TURNING_TO_DARK:
-      if( twoWheel.arrived() )
-        startCruising();
-      break;
-    
     
   }
-  
-  
+   
 }
 
 void doSelftest()
@@ -171,8 +114,9 @@ void doSelftest()
   }
   else if( selftestPhase == 3 )
   {
-    if( twoWheel.arrived() )
+    if( twoWheel.arrived() ){
       startCruising();
+    }
   }
 }
 
@@ -251,71 +195,4 @@ void keepTurning()
   twoWheel.turn( angle );  // turn by a random amount
 }
 
-void startLookingForDark()
-{
-#ifdef DO_WANDER_LOGGING
-  Serial.println( "*****************************************************************************************************" );
-   Serial.println( "startLookForDark " );
-#endif
-
-  state = STATE_LOOK_FOR_DARK;
-  
-  darkestHeading = twoWheel.getHeading()+180;
-  brightnessAtDarkestHeading = 1024; // very bright
-
-
-  turningLeft = random( 0, 2 ); // 0 or 1
-  
-  int angle = 360;
-  
-  if( turningLeft )
-    angle = -angle;
-    
-  twoWheel.turn( angle );  
-
-}
-
-void keepLookingForDark(int range)
-{
-  if( ! twoWheel.arrived() )
-  {
-    // must still be doing our 360 scan - keep loooking for the darkest direction
-   int brightness = collisionDetector.getAmbientBrightness(); 
- 
-   if( brightness < brightnessAtDarkestHeading && range == 0) // this direction is darker, so remember it
-   {
-     brightnessAtDarkestHeading = brightness;
-     darkestHeading = twoWheel.getHeading();
-     
-      #ifdef DO_WANDER_LOGGING
-     Serial.print( "keepLookingForDark new darkest is at " );
-     Serial.println(twoWheel.getHeading());
-     #endif
-     
-   }
-  }
-  else
-  {
-    
-    int currentHeading = twoWheel.getHeading();
-    
-    int turnDegrees = (darkestHeading - currentHeading) % 360;
-    
-    #ifdef DO_WANDER_LOGGING
-    Serial.println( "*****************************************************************************************************" );
-    Serial.print( "keepLookingForDark done, turning from " );
-    Serial.print(currentHeading);
-    Serial.print( " to ");
-    Serial.print(darkestHeading);
-    Serial.print( " so turning by " );
-    Serial.println( turnDegrees );
-    #endif
-
-    // have completed scan, so turn to the darkest direction then start cruising
-    state = STATE_TURNING_TO_DARK;
-    
-    twoWheel.turnToHeading( darkestHeading );  
-  }
-  
-}
 

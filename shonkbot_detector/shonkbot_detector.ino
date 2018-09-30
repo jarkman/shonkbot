@@ -17,9 +17,7 @@ http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
 #include "IRDetector.h"
 #include "TwoWheel.h"
 
-
 #define  DO_LOGGING
-
 
 
 // Arduino pins wired to stepper drivers - driver board labels pins as IN1, IN2 etc
@@ -37,25 +35,16 @@ http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
 // Define a stepper and the pins it will use
 // We use HALF4WIRE not FULL4WIRE because it results in lower overall current consumption (150mA per motor as opposed to 200mA)
 AccelStepper leftStepper(AccelStepper::HALF4WIRE, LEFT_IN1,LEFT_IN3,LEFT_IN2,LEFT_IN4); // note middle two pins are swapped to work with 28BYJ-48 
-                                                                                                                      
 AccelStepper rightStepper(AccelStepper::HALF4WIRE, RIGHT_IN1,RIGHT_IN3,RIGHT_IN2,RIGHT_IN4); // note middle two pins are swapped!
-
 
 
 #define PIEZO_PIN 12                        // Wire a piezo sounder from pin 12 to ground
 #define COLLISION_LED_PIN 13                // Wire IR LED, long leg to pin 13, short leg to ground
-#define SWARM_LED_PIN 11                    // Wire IR LED, long leg to pin 11, short leg to ground
 #define COLLISION_PHOTOTRANSISTOR_PIN A0    // Wire IR phototransistor collector (short leg) to A0 , emitter (long leg) to ground, with a 10k pullup from A0 to +5
 
 #define COLLISION_FREQUENCY 80              // Use 75 hz for collision detection
-#define SWARM_FREQUENCY 30  // 
 
 IRDetector collisionDetector(COLLISION_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, PIEZO_PIN, COLLISION_FREQUENCY);
-
-#ifdef DO_SWARM
-// Swarming is mostly coded, but the frequency discrimination is not working well enough, so I've ifdefed it out for now
-IRDetector swarmDetector(SWARM_LED_PIN, COLLISION_PHOTOTRANSISTOR_PIN, -1, SWARM_FREQUENCY);
-#endif
 
 // using 28BYj-48 motors from http://www.ebay.co.uk/itm/131410728499
 
@@ -79,47 +68,40 @@ void setup()
 
   Serial.print ("setup\n");
   #endif
-  
-  randomSeed(analogRead(COLLISION_PHOTOTRANSISTOR_PIN));  // use ambient IR as a source of randomness
-  
-  collisionDetector.setup();
-  #ifdef DO_SWARM
-  swarmDetector.setup();
-  #endif
-  twoWheel.setup();
 
   leftStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   leftStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
   rightStepper.setMaxSpeed(MAX_SPEED); // 800 is a sensible limit on 5v motor supply, 300 is a sensible limit on 3v.
   rightStepper.setAcceleration(MAX_ACCELERATION); // 1600 on 5v
+
+  randomSeed(analogRead(COLLISION_PHOTOTRANSISTOR_PIN));  // use ambient IR as a source of randomness
   
-  setupWander();
+  collisionDetector.setup(); //uses the phototransistor / IR emmiter to detect objects
+  twoWheel.setup(); // sets up the wheels
+  setupWander(); //sets up wandering
 }
 
 
 void loop()
 {
-  collisionDetector.loop();
-  #ifdef DO_SWARM
-  swarmDetector.loop();
-  #endif
-  loopWander();
-  
-  twoWheel.loop();
-  
+
+  collisionDetector.loop(); // tells it to keep detecting objects (see 'IRDetector.cpp' tab)
+  loopWander(); // tells it to keep doing 'buildPattern' (see 'wander' tab)
+  twoWheel.loop(); // sets up the wheels (see 'TwoWheel.cpp' tab)
   
 }
 
+// Called by setupWander
+// Pick different things for the robot to do by uncommenting one of the options
+
 void buildPattern()
 {
-   //buildOneSquare();
-   //buildPoly( random( 45, 170 ) );
-   buildCurvahedron( random( 45, 170 ) );
-   
-  //buildStraightLine(); // use this for exploring behaviour
-  // buildName();
-  //buildSquares();
- 
+   buildCurvahedron( random( 45, 170 ) ); // draw curvy polygon patterns  
+   //buildOneSquare(); // draw one square
+   //buildPoly( random( 45, 170 ) );  // draw straight-lined polygon patterns
+   //buildStraightLine(); // use this for exploring behaviour
+   //buildName(); // spells out 'shonkbot'
+   //buildSquares(); //builds multiple squares
 }
 
 void buildPoly(int angle)
