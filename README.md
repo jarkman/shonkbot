@@ -6,8 +6,8 @@ A collaboration by various Bristol Hackspace members. Designed by Richard Sewell
 See 
 
 * [Images and video](http://jarkman.co.uk/catalog/robots/shonkbot.htm)
-* [Detailed construction instructions](https://docs.google.com/document/d/1Y1hGiGaJtApV0hxRIG7Nc1STsIToJKDkXVcSrjUtcPU/edit) (written for Bristol Mini Maker Faire)
-* [Bill of materials (October 2016)](https://docs.google.com/spreadsheets/d/1iK1Ldb5zqyIW5yJ1DKdfzAgoTy_ZpKRSwKewDln2Fqw/edit?usp=sharing)
+* [Detailed construction instructions](https://docs.google.com/document/d/1QHNT2ikNUSk4J_2aCeMx6DPxwK5BRjbKGgpWV1k8Bqs/edit) (written for Bristol Mini Maker Faire)
+* [Bill of materials (October 2016)](https://docs.google.com/spreadsheets/d/1L7IJjhZtqhlaf8FUNChBJWbDVZbxt01uz1hc8_6pe8Y/edit#gid=0)
 * [Guide to running a Shonkbot workshop](https://docs.google.com/document/d/1BIUs8wwT11izIy_k6pxFZcgozXeECxZGXGSwyxmB_EE)
 
 # Software
